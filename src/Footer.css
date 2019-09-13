@@ -1,0 +1,14 @@
+
+.hang-loose {
+  padding: 0 10px 0 10px;
+  font-size: 15px;
+}
+
+.footer {
+  text-align: center;
+  line-height: 5vh;
+  height: 5vh;
+  background: #333333;
+  font-family: monospace;
+  color: white;
+}

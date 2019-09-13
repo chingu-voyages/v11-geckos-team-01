@@ -1,9 +1,13 @@
 
+
 require('codemirror/lib/codemirror.css')
 require('codemirror/theme/material.css')
 require('codemirror/theme/neat.css')
 require('codemirror/mode/xml/xml.js')
 require('codemirror/mode/javascript/javascript.js')
+
+// eslint-disable-next-line import/first
+import './Editor.css'
 
 // eslint-disable-next-line import/first
 import PropTypes from 'prop-types'
@@ -20,26 +24,34 @@ class Editor extends React.Component {
     this.options = {
       mode: 'javascript',
       theme: 'material',
+      viewportMargin: Infinity,
       lineNumbers: true
+    }
+    this.state = {
+      defaultValue: `\nfunction Foo () {\n  return "Bar"\n}\n`
     }
   }
   getCodeMirrorInstance () {
 		return require('codemirror')
 	}
   componentDidMount () {
-    console.log(this.textAreaNode)
     const codeMirrorInstance = this.getCodeMirrorInstance()
     this.codeMirror = codeMirrorInstance.fromTextArea(this.textAreaNode, this.options)
+    //
+    // Saves the editor content whenever a change happens
+    //
+    this.codeMirror.on('change', (doc, change) => {
+      this.props.onChange(doc.getValue())
+    })
+    // this.codeMirror.setSize('100%', '100%')
   }
   render() {
     return (
-      <div>
-        <textarea
-          ref={(ref) => this.textAreaNode = ref}
-          autoFocus={true}
-          defaultValue="function Foo () { return 'Bar' }"
-        ></textarea>
-      </div>
+      <textarea
+        ref={(ref) => this.textAreaNode = ref}
+        autoFocus={true}
+        defaultValue={this.state.defaultValue}
+      ></textarea>
     )
   }
 }
