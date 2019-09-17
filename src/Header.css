@@ -1,0 +1,10 @@
+
+.header {
+  text-align: center;
+  line-height: 5vh;
+  height: 5vh;
+  position: relative;
+  background: #333333;
+  font-family: monospace;
+  color: white;
+}
