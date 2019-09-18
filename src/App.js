@@ -22,11 +22,11 @@ function App() {
             onChange={onChange}
           />
         </div>
-        <div className="flex-item">
+        {/* <div className="flex-item">
           <Preview
             content={content}
           />
-        </div>
+        </div> */}
       </div>
       <Footer />
     </div>
