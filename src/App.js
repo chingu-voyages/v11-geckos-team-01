@@ -20,33 +20,30 @@ function App() {
   }
 
   const depthFirstSearch = (tree) => {
-    console.log(tree)
     // https://stackoverflow.com/questions/48612674/depth-first-traversal-with-javascript
     const schema = []
 
     const callback = ({ node, callback, name = '_root' }) => {
-      schema.push({ node, callback })
+      schema.push({ node, callback, name })
+      console.log(schema)
     }
-    (function recurse (context) {
-      let node = context
+    (function recurse (context, name) {
       let prop
-      debugger
+      // debugger
       const regex = /repeat\((\w|\d|\s|,)+\)/g
-      
-      if (context[0]) {
-        const repeat = Object.keys(node[0])[0]
-        if (repeat.match(regex)) {
-          console.log(node)
-          prop = repeat.match(regex)[0]
-          node = context[0][prop]
-          callback({ node, callback: repeat })
-          return recurse(context[0][prop])
-        }
+      debugger
+      const repeats = context[0] && Object.keys(context[0])[0].match(regex)
+      if (context[0] && repeats) {
+        debugger
+        prop = repeats[0]
+        callback({ node: context[0][prop], callback: repeats[0], name })
+        return recurse(context[0][prop])
       } else {
+        debugger
         for (let prop in context) {
           if (Array.isArray(context[prop])) {
-            callback({ name: prop, node: context })
-            return recurse(context[prop])
+            // callback({ name: prop, node: context[prop] })
+            return recurse(context[prop], prop)
           }
         }
       }

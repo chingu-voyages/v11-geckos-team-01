@@ -29,7 +29,7 @@ class Editor extends React.Component {
     }
     this.state = {
       // defaultValue: `\nfunction Foo () {\n  return "Bar"\n}\n`
-      defaultValue: `[{\n  'repeat(50, 100)': {\n    accountId: '{{guid()}}',\n    notes: [ { 'repeat(50, 100)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`
+      defaultValue: `[{\n  'repeat(50, 100)': {\n    accountId: '{{guid()}}',\n    notes: [ { 'repeat(5, 10)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`
     }
   }
   getCodeMirrorInstance () {
@@ -59,7 +59,6 @@ class Editor extends React.Component {
         .replace(/'/g, '"')
 
       try {
-        console.log(doc.getValue())
         this.props.onChange(JSON.parse(str))
       } catch (error) {
         console.error(error)
