@@ -37,6 +37,9 @@ function App() {
     const schema = []
 
     const callback = ({ node, callback, name = '_root' }) => {
+      if (schema.length) {
+        schema[schema.length - 1].node[name] = `{{&${name}}}`
+      }
       schema.push({ node, callback, name })
       // console.log(schema)
     }
@@ -68,44 +71,48 @@ function App() {
 
     let result = ''
     let lastNode = {}
+    const config = {
+      // guid: () => (Math.random() * 999999).toFixed(2)
+      guid: () => uuid()
+    }
     const arr = depthFirstSearch(nextState)
-    console.log(arr)
+    // console.log(arr)
     const parsed = () => arr.map(({ node, callback, name }, i) => {
       lastNode = { node, callback, name }
       let currentNode = null
-      if (arr[i + i]) {
+      // let nextNode = arr[i + 1]
+      console.log(lastNode)
+      debugger
+      if (arr[i + 1]) {
         currentNode = arr[i + 1].name
       }
-      console.log(lastNode.name, '\n')
       const newNode = { ...node,
         [currentNode]: `{{&${currentNode}}}`,
       }
       const template = i === 0
         ? JSON.stringify(repeat(callback, newNode))
         : result
-      const config = {
-        // guid: () => (Math.random() * 999999).toFixed(2)
-        guid: () => uuid()
-      }
       if (currentNode) {
         config[currentNode] = () => `{{&${currentNode}}}`
       }
       if (lastNode.name) {
         config[lastNode.name] = () => {
-          console.log(repeat(lastNode.callback, lastNode.node, 'json'))
+          // console.log(repeat(lastNode.callback, lastNode.node, 'json'))
           return repeat(lastNode.callback, lastNode.node, 'json')
         }
       }
-      console.log(config)
+      // console.log(config)
       const string = Mustache.render(template, config)
       result = string
         .replace(/("\[)/g, "[")
         .replace(/(\]")/g, "]")
-      // console.log(JSON.parse(string))
-      return string
+      console.log(JSON.parse(result))
+      console.log(currentNode)
+      console.log('----------------------END--------------------------------')
+      return result
     })
     parsed()
-    console.log(JSON.parse(result))
+    // console.log(JSON.parse(result))
 
     
     // console.log(parsed)
