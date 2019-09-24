@@ -1,22 +1,35 @@
 import React, { useState } from 'react'
 import './App.css'
 
+import uuid from 'uuid/v4'
+import Mustache from 'mustache'
+
 import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
 import Footer from './Footer'
 
+import { formatJSONfromString } from './Utils'
+
 function App() {
   const [content, setContent] = useState('')
 
+  const repeat = (callback, node, mode) => {
+    const args = callback.match(/\d+/g)
+    const parsed = args.map((str) => parseInt(str, 10))
+    // console.log(parsed)
 
-  function repeat (min, max, item) {
+    const max = parsed[1]
+    const min = parsed[0]
+    
     let i = Math.floor((Math.random() * ((max + 1) - min)) + min)
-    const arr = []
+    // console.log(`Repeat this object ${i} times.`)
+    
+    const result = []
     while(--i) {
-      arr.push({ ...item })
+      result.push({ ...node })
     }
-    return arr
+    return mode === 'json' ? JSON.stringify(result) : result
   }
 
   const depthFirstSearch = (tree) => {
@@ -25,21 +38,21 @@ function App() {
 
     const callback = ({ node, callback, name = '_root' }) => {
       schema.push({ node, callback, name })
-      console.log(schema)
+      // console.log(schema)
     }
     (function recurse (context, name) {
       let prop
       // debugger
       const regex = /repeat\((\w|\d|\s|,)+\)/g
-      debugger
+      // debugger
       const repeats = context[0] && Object.keys(context[0])[0].match(regex)
       if (context[0] && repeats) {
-        debugger
+        // debugger
         prop = repeats[0]
         callback({ node: context[0][prop], callback: repeats[0], name })
         return recurse(context[0][prop])
       } else {
-        debugger
+        // debugger
         for (let prop in context) {
           if (Array.isArray(context[prop])) {
             // callback({ name: prop, node: context[prop] })
@@ -49,14 +62,53 @@ function App() {
       }
     })(tree)
     return schema
-  }  
-
+  }
   const onChange = (nextState) => {
-    // console.log(nextState)
     setContent(nextState)
 
+    let result = ''
+    let lastNode = {}
+    const arr = depthFirstSearch(nextState)
+    console.log(arr)
+    const parsed = () => arr.map(({ node, callback, name }, i) => {
+      lastNode = { node, callback, name }
+      let currentNode = null
+      if (arr[i + i]) {
+        currentNode = arr[i + 1].name
+      }
+      console.log(lastNode.name, '\n')
+      const newNode = { ...node,
+        [currentNode]: `{{&${currentNode}}}`,
+      }
+      const template = i === 0
+        ? JSON.stringify(repeat(callback, newNode))
+        : result
+      const config = {
+        // guid: () => (Math.random() * 999999).toFixed(2)
+        guid: () => uuid()
+      }
+      if (currentNode) {
+        config[currentNode] = () => `{{&${currentNode}}}`
+      }
+      if (lastNode.name) {
+        config[lastNode.name] = () => {
+          console.log(repeat(lastNode.callback, lastNode.node, 'json'))
+          return repeat(lastNode.callback, lastNode.node, 'json')
+        }
+      }
+      console.log(config)
+      const string = Mustache.render(template, config)
+      result = string
+        .replace(/("\[)/g, "[")
+        .replace(/(\]")/g, "]")
+      // console.log(JSON.parse(string))
+      return string
+    })
+    parsed()
+    console.log(JSON.parse(result))
 
-    console.log(depthFirstSearch(nextState))
+    
+    // console.log(parsed)
     // findNestedLists(nextState)
     // console.timeEnd('parse')
   }
