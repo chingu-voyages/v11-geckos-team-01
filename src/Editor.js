@@ -5,6 +5,8 @@ require('codemirror/theme/material.css')
 require('codemirror/theme/neat.css')
 require('codemirror/mode/xml/xml.js')
 require('codemirror/mode/javascript/javascript.js')
+require('codemirror/addon/lint/lint');
+require('codemirror/addon/lint/json-lint');
 
 // eslint-disable-next-line import/first
 import './Editor.css'
@@ -27,7 +29,7 @@ class Editor extends React.Component {
     this.options = {
       mode: props.mode ? props.mode : 'javascript',
       theme: 'material',
-      viewportMargin: Infinity,
+      viewportMargin: props.viewPortMargin ? props.viewPortMargin : 10,
       lineNumbers: true
     }
     this.state = {

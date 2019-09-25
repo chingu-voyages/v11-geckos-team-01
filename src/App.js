@@ -128,18 +128,21 @@ function App() {
       <Header
         callback={generateJSON}        
       />
-      <div className="flex-container">
-        <div className="flex-item">
-          <Editor
-            onChange={onChange}
-            defaultValue={initialValue}
-            readOnly={false}
-          />
-        </div>
-        <div className="flex-item">
-          <Preview
-            defaultValue={result}
-          />
+      <div className="editor-wrapper">
+        <div className="flex-container">
+          <div className="flex-item">
+            <Editor
+              onChange={onChange}
+              viewPortMargin={Infinity}
+              defaultValue={initialValue}
+              readOnly={false}
+            />
+          </div>
+          <div className="flex-item">
+            <Preview
+              defaultValue={result}
+            />
+          </div>
         </div>
       </div>
       <Footer />

@@ -12,7 +12,6 @@ function Preview(props) {
   return (
     <div className="wrapper">
       <Editor
-        mode={'json'}
         defaultValue={props.defaultValue}
         readOnly={true}
       />
