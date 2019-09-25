@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material/react-button": "^0.15.0",
     "codemirror": "^5.48.4",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",

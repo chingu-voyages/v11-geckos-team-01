@@ -9,10 +9,13 @@ import Preview from './Preview'
 import Header from './Header'
 import Footer from './Footer'
 
-import { formatJSONfromString } from './Utils'
+const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    notes: [ { 'repeat(5, 10)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`
+
+// import { formatJSONfromString } from './Utils'
 
 function App() {
-  const [content, setContent] = useState('')
+  const [value, setValue] = useState('')
+  const [result, setResult] = useState('')
 
   const repeat = (callback, node, mode) => {
     const args = callback.match(/\d+/g)
@@ -31,7 +34,6 @@ function App() {
     }
     return mode === 'json' ? JSON.stringify(result) : result
   }
-
   const depthFirstSearch = (tree) => {
     // https://stackoverflow.com/questions/48612674/depth-first-traversal-with-javascript
     const schema = []
@@ -66,23 +68,22 @@ function App() {
     })(tree)
     return schema
   }
-  const onChange = (nextState) => {
-    setContent(nextState)
-
+  const generateJSON = () => {
+    console.log('CLICK THAT BITCH')
     let result = ''
     let lastNode = {}
     const config = {
       // guid: () => (Math.random() * 999999).toFixed(2)
       guid: () => uuid()
     }
-    const arr = depthFirstSearch(nextState)
-    // console.log(arr)
-    const parsed = () => arr.map(({ node, callback, name }, i) => {
+    const arr = depthFirstSearch(value)
+    console.log(arr)
+    arr.map(({ node, callback, name }, i) => {
       lastNode = { node, callback, name }
       let currentNode = null
       // let nextNode = arr[i + 1]
-      console.log(lastNode)
-      debugger
+      // console.log(lastNode)
+      // debugger
       if (arr[i + 1]) {
         currentNode = arr[i + 1].name
       }
@@ -107,32 +108,39 @@ function App() {
         .replace(/("\[)/g, "[")
         .replace(/(\]")/g, "]")
       console.log(JSON.parse(result))
-      console.log(currentNode)
-      console.log('----------------------END--------------------------------')
-      return result
+      // console.log(currentNode)
+      // console.log('----------------------END--------------------------------')
+      // console.log(result)
     })
-    parsed()
+    console.log(result)
     // console.log(JSON.parse(result))
-
-    
-    // console.log(parsed)
-    // findNestedLists(nextState)
-    // console.timeEnd('parse')
+    setResult(result)
+  }
+  const onChange = (nextState) => {
+    try {
+      setValue(nextState)
+    } catch (error) {
+      return false
+    }
   }
   return (
     <div className="app">
-      <Header />
+      <Header
+        callback={generateJSON}        
+      />
       <div className="flex-container">
         <div className="flex-item">
           <Editor
             onChange={onChange}
+            defaultValue={initialValue}
+            readOnly={false}
           />
         </div>
-        {/* <div className="flex-item">
+        <div className="flex-item">
           <Preview
-            content={content}
+            defaultValue={result}
           />
-        </div> */}
+        </div>
       </div>
       <Footer />
     </div>

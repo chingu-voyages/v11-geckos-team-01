@@ -1,14 +1,26 @@
 
 import React from 'react'
 
+import PropTypes from 'prop-types'
+
+import Editor from './Editor'
+
 import './Preview.css'
 
-function Preview() {
+function Preview(props) {
+  // console.log(props.defaultValue)
   return (
     <div className="wrapper">
-      <h2>Preview</h2>
+      <Editor
+        mode={'json'}
+        defaultValue={props.defaultValue}
+        readOnly={true}
+      />
     </div>
   )
 }
 
+Preview.propTypes = {
+  defaultValue: PropTypes.string
+}
 export default Preview
