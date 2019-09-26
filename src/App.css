@@ -15,6 +15,11 @@
   height: 90vh;
 }
 
+.box {
+  background: #afa1a1;
+  overflow: hidden;
+}
+
 .editor {
   height: 100vh;
   display: block;
