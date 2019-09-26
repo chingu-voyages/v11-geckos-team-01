@@ -21,29 +21,14 @@ function App() {
   return (
     <div className="app">
       <Header />
-      {/* <div className="flex-container">
-        <div className="flex-item">
-          <Editor
-            onChange={onChange}
-          />
-        </div>
-        <div className="flex-item">
-          <Preview
-            content={content}
-          />
-        </div>
-      </div> */}
       <div className="flex-container">
-      <ResizableBox className="box" width={500} axis="x">
-        <div>
-          <h2>First Pane</h2>
+        <ResizableBox className="box flex-item" width={500} axis="x">
+          <Editor onChange={onChange} />
+        </ResizableBox>
+        <div className="flex-item">
+          <Preview content={content} />
         </div>
-      </ResizableBox>
-        <div>
-          <h2>Sencond Pane</h2>
-        </div>
-        </div>
-     
+      </div>
       <Footer />
     </div>
   )
