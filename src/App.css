@@ -11,7 +11,7 @@
 }
 
 .flex-item {
-  width: 50%;
+  /* width: 50%; */
   height: 90vh;
 }
 
@@ -20,3 +20,4 @@
   display: block;
   width: 100%;
 }
+
