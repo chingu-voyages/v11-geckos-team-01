@@ -1,4 +1,7 @@
 
 .wrapper {
-  padding: 0 25px 0 25px;
+  /* padding: 0 25px 0 25px; */
+  height: 100%;
+  width: 100%;
+  background: #afa1a1;
 }
