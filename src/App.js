@@ -13,11 +13,22 @@ const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    
 
 // import { formatJSONfromString } from './Utils'
 
-function App() {
-  const [value, setValue] = useState('')
-  const [result, setResult] = useState('')
+class App extends React.Component {
+  // const [value, setValue] = useState('')
+  // const [result, setResult] = useState('')
+  constructor (props) {
+    super(props)
+    this.state = {
+      value: '',
+      result: ''
+    }
+    this.findNodes = this.findNodes.bind(this)
+    this.generateJSON = this.generateJSON.bind(this)
+    this.repeatNode = this.repeatNode.bind(this)
+    this.onChange = this.onChange.bind(this)
+  }
 
-  const repeat = (callback, node, mode) => {
+  repeatNode (callback, node, mode) {
     const args = callback.match(/\d+/g)
     const parsed = args.map((str) => parseInt(str, 10))
     // console.log(parsed)
@@ -34,7 +45,7 @@ function App() {
     }
     return mode === 'json' ? JSON.stringify(result) : result
   }
-  const depthFirstSearch = (tree) => {
+  findNodes () {
     // https://stackoverflow.com/questions/48612674/depth-first-traversal-with-javascript
     const schema = []
 
@@ -46,6 +57,7 @@ function App() {
       // console.log(schema)
     }
     (function recurse (context, name) {
+      console.log(context, name)
       let prop
       // debugger
       const regex = /repeat\((\w|\d|\s|,)+\)/g
@@ -65,10 +77,11 @@ function App() {
           }
         }
       }
-    })(tree)
+    })(this.state.value)
+    console.log(this.state.value)
     return schema
   }
-  const generateJSON = () => {
+  generateJSON () {
     console.log('CLICK THAT BITCH')
     let result = ''
     let lastNode = {}
@@ -76,7 +89,8 @@ function App() {
       // guid: () => (Math.random() * 999999).toFixed(2)
       guid: () => uuid()
     }
-    const arr = depthFirstSearch(value)
+    const arr = this.findNodes()
+    debugger
     console.log(arr)
     arr.map(({ node, callback, name }, i) => {
       lastNode = { node, callback, name }
@@ -91,15 +105,15 @@ function App() {
         [currentNode]: `{{&${currentNode}}}`,
       }
       const template = i === 0
-        ? JSON.stringify(repeat(callback, newNode))
+        ? JSON.stringify(this.repeatNode(callback, newNode))
         : result
       if (currentNode) {
         config[currentNode] = () => `{{&${currentNode}}}`
       }
       if (lastNode.name) {
         config[lastNode.name] = () => {
-          // console.log(repeat(lastNode.callback, lastNode.node, 'json'))
-          return repeat(lastNode.callback, lastNode.node, 'json')
+          // console.log(repeatNode(lastNode.callback, lastNode.node, 'json'))
+          return this.repeatNode(lastNode.callback, lastNode.node, 'json')
         }
       }
       // console.log(config)
@@ -114,40 +128,45 @@ function App() {
     })
     console.log(result)
     // console.log(JSON.parse(result))
-    setResult(result)
+    this.setState({ result })
   }
-  const onChange = (nextState) => {
-    try {
-      setValue(nextState)
-    } catch (error) {
-      return false
-    }
+  onChange (nextState) {
+    console.log(nextState)
+    this.setState({ value: nextState })
+    console.log(this.state.value)
+    // try {
+
+    // } catch (error) {
+    //   return false
+    // }
   }
-  return (
-    <div className="app">
-      <Header
-        callback={generateJSON}        
-      />
-      <div className="editor-wrapper">
-        <div className="flex-container">
-          <div className="flex-item">
-            <Editor
-              onChange={onChange}
-              viewPortMargin={Infinity}
-              defaultValue={initialValue}
-              readOnly={false}
-            />
-          </div>
-          <div className="flex-item">
-            <Preview
-              defaultValue={result}
-            />
+  render () {
+    return (
+      <div className="app">
+        <Header
+          callback={this.generateJSON}        
+        />
+        <div className="editor-wrapper">
+          <div className="flex-container">
+            <div className="flex-item">
+              <Editor
+                onChange={this.onChange}
+                viewPortMargin={Infinity}
+                defaultValue={initialValue}
+                readOnly={false}
+              />
+            </div>
+            <div className="flex-item">
+              <Preview
+                defaultValue={this.state.result}
+              />
+            </div>
           </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
-  )
+    )    
+  }
 }
 
 export default App
