@@ -3,6 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import axios from 'axios';
+
+console.log(axios)
+
+axios.interceptors.request.use((config) => {
+  console.log(config)
+  return config
+})
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

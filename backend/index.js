@@ -4,6 +4,7 @@ require('dotenv').config()
 var express = require('express')
 var passport = require('passport')
 var Strategy = require('passport-github').Strategy
+var path = require('path')
 
 
 console.log(process.env.GITHUB_CLIENT_ID)
@@ -19,6 +20,7 @@ console.log(process.env.GITHUB_CLIENT_SECRET)
 passport.use(new Strategy({
     clientID: process.env['GITHUB_CLIENT_ID'],
     clientSecret: process.env['GITHUB_CLIENT_SECRET'],
+    // callbackURL: "http://127.0.0.1:8080/return"
     callbackURL: '/return'
   },
   function(accessToken, refreshToken, profile, cb) {
@@ -69,18 +71,26 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
+// app.use('/', express.static(path.join(__dirname, 'build')))
+app.use('/', express.static('../build'))
+
 // Define routes.
-app.get('/',
-  function(req, res) {
-    // res.render('home', { user: req.user })
-    console.log(res, req)
-    res.send(JSON.stringify({ res: 'yo' }))
-  })
+// app.get('/',
+//   function(req, res) {
+//     // res.render('home', { user: req.user })
+//     res.end()
+//   })
 
 app.get('/login',
   function(req, res){
-    res.render('login')
+    res.send({ msg: 'please login' })
   })
+
+app.get('/logout', function(req, res) {
+  console.log('logging out...')
+  req.logout()
+  res.redirect('/')
+})
 
 app.get('/login/github',
   passport.authenticate('github'))
@@ -94,7 +104,21 @@ app.get('/return',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
-    res.render('profile', { user: req.user })
+    // res.render('profile', { user: req.user })
+    res.send({ user: req.user })
   })
+
+app.get('/:guid',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function(req, res) {
+    // res.render('profile', { user: req.user })
+    console.log(req.user)
+    console.log(req.params)
+    res.send({
+      msg: 'recieved GUID',
+      guid: req.params.guid,
+      user: req.user
+    })
+  })  
 
 app.listen(process.env['PORT'] || 8080)

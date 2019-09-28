@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { BrowserRouter as Router } from 'react-router-dom'
 import './App.css'
 
 import uuid from 'uuid/v4'
 import Mustache from 'mustache'
+import axios from 'axios'
 
 import Editor from './Editor'
 import Preview from './Preview'
@@ -19,6 +21,7 @@ class App extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      user: null,
       value: '',
       result: ''
     }
@@ -26,6 +29,21 @@ class App extends React.Component {
     this.generateJSON = this.generateJSON.bind(this)
     this.repeatNode = this.repeatNode.bind(this)
     this.onChange = this.onChange.bind(this)
+  }
+  componentDidMount () {
+    axios.get('/profile', { headers: {
+      'Access-Control-Allow-Origin': '*'
+    }}).then(({ data }) => {
+      console.log(data)
+      if (data.user && data.user.id) {
+        console.log('loggged in')
+        console.log(data)
+        localStorage.setItem('user', JSON.stringify(data))
+        this.setState({ user: data })
+      } else {
+        console.log('logged out')
+      }
+    })
   }
 
   repeatNode (callback, node, mode) {
@@ -142,29 +160,32 @@ class App extends React.Component {
   }
   render () {
     return (
-      <div className="app">
-        <Header
-          callback={this.generateJSON}        
-        />
-        <div className="editor-wrapper">
-          <div className="flex-container">
-            <div className="flex-item">
-              <Editor
-                onChange={this.onChange}
-                viewPortMargin={Infinity}
-                defaultValue={initialValue}
-                readOnly={false}
-              />
-            </div>
-            <div className="flex-item">
-              <Preview
-                defaultValue={this.state.result}
-              />
+      <Router>
+        <div className="app">
+          <Header
+            user={this.state.user}
+            callback={this.generateJSON}        
+          />
+          <div className="editor-wrapper">
+            <div className="flex-container">
+              <div className="flex-item">
+                <Editor
+                  onChange={this.onChange}
+                  viewPortMargin={Infinity}
+                  defaultValue={initialValue}
+                  readOnly={false}
+                />
+              </div>
+              <div className="flex-item">
+                <Preview
+                  defaultValue={this.state.result}
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <Footer />
-      </div>
+          <Footer />
+        </div>        
+      </Router>
     )    
   }
 }
