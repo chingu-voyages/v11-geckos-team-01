@@ -6,6 +6,9 @@ var passport = require('passport')
 var Strategy = require('passport-github').Strategy
 
 
+console.log(process.env.GITHUB_CLIENT_ID)
+console.log(process.env.GITHUB_CLIENT_SECRET)
+
 // Configure the Facebook strategy for use by Passport.
 //
 // OAuth 2.0-based strategies require a `verify` function which receives the
@@ -69,7 +72,9 @@ app.use(passport.session())
 // Define routes.
 app.get('/',
   function(req, res) {
-    res.render('home', { user: req.user })
+    // res.render('home', { user: req.user })
+    console.log(res, req)
+    res.send(JSON.stringify({ res: 'yo' }))
   })
 
 app.get('/login',
