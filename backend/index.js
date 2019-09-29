@@ -6,9 +6,7 @@ var passport = require('passport')
 var Strategy = require('passport-github').Strategy
 var path = require('path')
 
-
-console.log(process.env.GITHUB_CLIENT_ID)
-console.log(process.env.GITHUB_CLIENT_SECRET)
+var db = require('./repo')
 
 // Configure the Facebook strategy for use by Passport.
 //
@@ -95,17 +93,41 @@ app.get('/logout', function(req, res) {
 app.get('/login/github',
   passport.authenticate('github'))
 
+app.post('/user', async (req, res) => {
+  await db.createUser(req.user.id).then((data) => {
+    console.log(data)
+    res.send({ status: 200, message: 'User is created' })
+  })
+})
+
 app.get('/return', 
   passport.authenticate('github', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/')
-  })
+    async (req, res) => {
+      await db.createUser(req.user.id).then((data) => {
+        console.log(data)
+      })
+      res.redirect('/')
+    }
+  )
 
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
     // res.render('profile', { user: req.user })
     res.send({ user: req.user })
+  })
+
+app.get('/user',
+  require('connect-ensure-login').ensureLoggedIn(),
+  async (req, res) => {
+    console.log(req.user)
+    await db.createUser(req.user.id).then((data) => {
+      console.log(data)
+      res.send({ msg: 'user created' })
+    })
+    // await db.findUser(req.user.id).then((data) => {
+    //   console.log(data)
+    // })
   })
 
 app.get('/:guid',
@@ -119,6 +141,6 @@ app.get('/:guid',
       guid: req.params.guid,
       user: req.user
     })
-  })  
+  })
 
 app.listen(process.env['PORT'] || 8080)

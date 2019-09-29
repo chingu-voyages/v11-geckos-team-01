@@ -23,6 +23,8 @@ class App extends React.Component {
     this.state = {
       user: null,
       value: '',
+      templateId: '',
+      loaded: true,
       result: ''
     }
     this.findNodes = this.findNodes.bind(this)
@@ -40,6 +42,10 @@ class App extends React.Component {
         console.log(data)
         localStorage.setItem('user', JSON.stringify(data))
         this.setState({ user: data })
+        
+        return axios.post('/user', { }).then(() => {
+          console.log()
+        })
       } else {
         console.log('logged out')
       }
@@ -146,7 +152,18 @@ class App extends React.Component {
     })
     console.log(result)
     // console.log(JSON.parse(result))
-    this.setState({ result })
+    this.setState({ result, loaded: false })
+
+    const url = `/update/${this.state.user.id}/template`
+    const options = { params: { templateId: this.state.templateId }}
+    const data = { result, template: null }
+
+    console.log({ ...options, ...data })
+    axios.post(url, data, options).then((data) => {
+      console.log(data)
+    }).finally(() => {
+      this.setState({ loaded: true })
+    })
   }
   onChange (nextState) {
     console.log(nextState)
