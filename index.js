@@ -4,11 +4,10 @@ require('dotenv').config()
 var express = require('express')
 var passport = require('passport')
 var Strategy = require('passport-github').Strategy
-var path = require('path')
+// var path = require('path')
 
-
-console.log(process.env.GITHUB_CLIENT_ID)
-console.log(process.env.GITHUB_CLIENT_SECRET)
+// console.log(process.env.GITHUB_CLIENT_ID)
+// console.log(process.env.GITHUB_CLIENT_SECRET)
 
 // Configure the Facebook strategy for use by Passport.
 //
@@ -72,7 +71,7 @@ app.use(passport.session())
 
 
 // app.use('/', express.static(path.join(__dirname, 'build')))
-app.use('/', express.static('../build'))
+app.use('/', express.static('./build'))
 
 // Define routes.
 // app.get('/',
