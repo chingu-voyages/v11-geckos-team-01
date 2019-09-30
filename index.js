@@ -19,8 +19,8 @@ var Strategy = require('passport-github').Strategy
 passport.use(new Strategy({
     clientID: process.env['GITHUB_CLIENT_ID'],
     clientSecret: process.env['GITHUB_CLIENT_SECRET'],
-    // callbackURL: "http://127.0.0.1:8080/return"
-    callbackURL: '/return'
+    callbackURL: process.env.CALLBACK_URL || "http://localhost:8080/return"
+    // callbackURL: '/return'
   },
   function(accessToken, refreshToken, profile, cb) {
     // In this example, the user's Facebook profile is supplied as the user
