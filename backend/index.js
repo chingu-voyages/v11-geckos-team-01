@@ -4,7 +4,7 @@ require('dotenv').config()
 var express = require('express')
 var passport = require('passport')
 var Strategy = require('passport-github').Strategy
-var path = require('path')
+// var path = require('path')
 
 var db = require('./repo')
 
@@ -60,6 +60,7 @@ app.set('view engine', 'ejs')
 // logging, parsing, and session handling.
 app.use(require('morgan')('combined'))
 app.use(require('cookie-parser')())
+app.use(require('body-parser').json())
 app.use(require('body-parser').urlencoded({ extended: true }))
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }))
 
@@ -81,7 +82,7 @@ app.use('/', express.static('../build'))
 
 app.get('/login',
   function(req, res){
-    res.send({ msg: 'please login' })
+    res.send({ message: 'please login', status: 401 })
   })
 
 app.get('/logout', function(req, res) {
@@ -123,11 +124,44 @@ app.get('/user',
     console.log(req.user)
     await db.createUser(req.user.id).then((data) => {
       console.log(data)
-      res.send({ msg: 'user created' })
+      res.send({ message: 'user created' })
     })
     // await db.findUser(req.user.id).then((data) => {
     //   console.log(data)
     // })
+  })
+
+app.post(`/update/template`,
+  require('connect-ensure-login').ensureLoggedIn(), 
+  async (req, res) => {
+    console.log('\n')
+    console.log(req.body)
+    console.log('\n')
+    await db.createTemplate({
+      userId: req.user.id,
+      json: req.body.json,
+      template:  req.body.template
+    }).then((data) => {
+      console.log('DATA: ', data)
+    })
+    res.send({ message: `Created template for user ${req.user.username}` })
+  })
+
+app.get('/user/template/:guid',
+  require('connect-ensure-login').ensureLoggedIn(),
+  (req, res) => {
+    db.getTemplate({
+      userId: req.user.id, templateId: req.params.guid
+    }).then(({ json }) => {
+      res.json(JSON.parse(json))
+    })
+  })
+
+app.put(`/user/template/:guid`,
+  require('connect-ensure-login').ensureLoggedIn(),
+  (req, res) => {
+    console.log(req.params)
+    res.send({ message: `Updated template for user ${req.user.username}` })
   })
 
 app.get('/:guid',
@@ -137,7 +171,7 @@ app.get('/:guid',
     console.log(req.user)
     console.log(req.params)
     res.send({
-      msg: 'recieved GUID',
+      message: 'recieved GUID',
       guid: req.params.guid,
       user: req.user
     })

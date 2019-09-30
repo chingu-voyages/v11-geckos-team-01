@@ -65,7 +65,7 @@ class Editor extends React.Component {
       this.codeMirror.on('change', (doc, change) => {
         try {
           const str = formatJSONfromString(doc.getValue())
-          this.props.onChange(JSON.parse(str))
+          this.props.onChange(JSON.parse(str), doc.getValue())
         } catch (error) {
           console.error(error)
         }

@@ -22,7 +22,8 @@ class App extends React.Component {
     super(props)
     this.state = {
       user: null,
-      value: '',
+      docValue: '',
+      template: '',
       templateId: '',
       loaded: true,
       result: ''
@@ -42,10 +43,6 @@ class App extends React.Component {
         console.log(data)
         localStorage.setItem('user', JSON.stringify(data))
         this.setState({ user: data })
-        
-        return axios.post('/user', { }).then(() => {
-          console.log()
-        })
       } else {
         console.log('logged out')
       }
@@ -101,8 +98,8 @@ class App extends React.Component {
           }
         }
       }
-    })(this.state.value)
-    console.log(this.state.value)
+    })(this.state.template)
+    console.log(this.state.template)
     return schema
   }
   generateJSON () {
@@ -154,21 +151,22 @@ class App extends React.Component {
     // console.log(JSON.parse(result))
     this.setState({ result, loaded: false })
 
-    const url = `/update/${this.state.user.id}/template`
-    const options = { params: { templateId: this.state.templateId }}
-    const data = { result, template: null }
-
-    console.log({ ...options, ...data })
-    axios.post(url, data, options).then((data) => {
+    const url = `/update/template`
+    const data = {
+      json: result,
+      template: this.state.docValue
+    }
+    console.log({ ...data })
+    axios.post(url, data).then((data) => {
       console.log(data)
     }).finally(() => {
       this.setState({ loaded: true })
     })
   }
-  onChange (nextState) {
-    console.log(nextState)
-    this.setState({ value: nextState })
-    console.log(this.state.value)
+  onChange (object, docValue) {
+    console.log(object)
+    this.setState({ template: object, docValue })
+    console.log(this.state.template)
     // try {
 
     // } catch (error) {

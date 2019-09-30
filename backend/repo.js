@@ -19,8 +19,9 @@ const userSchema = new Schema({
 })
 
 const templateSchema = new Schema({
-  id: String,
-  result: String,
+  templateId: String,
+  json: String,
+  userId: String,
   template: String,
   createdOn: String,
   updatedOn: String
@@ -29,12 +30,12 @@ const templateSchema = new Schema({
 const User = mongoose.model('User', userSchema)
 const Template = mongoose.model('Template', templateSchema)
 
-const connect = async (data) => {
+const connect = async (name = 'users') => {
   const client = new MongoClient(uri)
   try {
     await client.connect()
     const db = client.db('json-generator')
-    return db.collection('users')
+    return db.collection(name)
   } catch (error) {
     console.log(error)
   }
@@ -64,7 +65,7 @@ const mlabService = {
       console.log('findOne: ', user)
 
       if (!user) {
-        collection.insertOne(new User({ userId, template: [] }))
+        collection.insertOne(new User({ userId, templates: [] }))
       } else {
         console.log('\n')
         console.log('USER EXISTS')
@@ -75,6 +76,31 @@ const mlabService = {
       console.log(error)
     }
     client.close()
+  },
+  getTemplate: ({ userId, templateId }) => {
+    console.log('\n')
+    console.log('USER_ID:', userId,'TEMPLATE_ID:', templateId)
+    console.log('\n')    
+    return connect().then(async (collection) => {
+      const user = await collection.findOne({ userId })
+      console.log(user)
+      return user.templates.find(({ id }) => templateId === id)
+    }).catch((error) => {
+      console.log(error)
+    })
+  },
+  createTemplate: async ({ userId, template, json }) => {
+    const date = new Date().toLocaleString()
+    const nextState = new Template({
+      id: uuid(), json, userId, template, createdOn: date, updatedOn: date
+    })
+    return connect().then(async (collection) => {
+      const user = await collection.findOne({ userId })
+      const templates = [ ...user.templates, nextState ]
+      await collection.updateOne({ userId }, new User({ ...user, templates }))
+    }).catch((error) => {
+      console.log(error)
+    })
   }
   // createUser: (data) => {
   //   return this.connect((collection) => {
