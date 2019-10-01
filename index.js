@@ -6,7 +6,9 @@ var passport = require('passport')
 var Strategy = require('passport-github').Strategy
 // var path = require('path')
 
-var db = require('./repo')
+var db = require('./backend/repo')
+// console.log(process.env.GITHUB_CLIENT_ID)
+// console.log(process.env.GITHUB_CLIENT_SECRET)
 
 // Configure the Facebook strategy for use by Passport.
 //
@@ -18,8 +20,8 @@ var db = require('./repo')
 passport.use(new Strategy({
     clientID: process.env['GITHUB_CLIENT_ID'],
     clientSecret: process.env['GITHUB_CLIENT_SECRET'],
-    // callbackURL: "http://127.0.0.1:8080/return"
-    callbackURL: '/return'
+    callbackURL: process.env.CALLBACK_URL || "http://localhost:8080/return"
+    // callbackURL: '/return'
   },
   function(accessToken, refreshToken, profile, cb) {
     // In this example, the user's Facebook profile is supplied as the user
@@ -71,7 +73,7 @@ app.use(passport.session())
 
 
 // app.use('/', express.static(path.join(__dirname, 'build')))
-app.use('/', express.static('../build'))
+app.use('/', express.static('./build'))
 
 // Define routes.
 // app.get('/',
