@@ -62,10 +62,17 @@ class Editor extends React.Component {
     console.log(this.props.readOnly)
     this.setState({ defaultValue: this.props.defaultValue })
     if (!this.props.readOnly) {
+      // initialize
+      const doc = this.codeMirror.getDoc()
+      const str = formatJSONfromString(doc.getValue())
+      const val = JSON.parse(str)
+      this.props.onChange(val)     
+       
       this.codeMirror.on('change', (doc, change) => {
         try {
           const str = formatJSONfromString(doc.getValue())
-          this.props.onChange(JSON.parse(str))
+          const val = JSON.parse(str)
+          this.props.onChange(val)
         } catch (error) {
           console.error(error)
         }
