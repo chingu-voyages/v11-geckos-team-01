@@ -13,6 +13,7 @@
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
+    "http-proxy-middleware": "^0.20.0",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "mongodb": "^3.3.2",
@@ -34,7 +35,9 @@
   "scripts": {
     "heroku-postbuild": "react-scripts build",
     "start": "node .",
-    "dev": "react-scripts start",
+    "dev": "concurrently npm:dev:*",
+    "dev:server": "nodemon index.js",
+    "dev:client": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -55,6 +58,8 @@
     ]
   },
   "devDependencies": {
+    "concurrently": "^4.1.2",
+    "nodemon": "^1.19.3",
     "standard": "^14.1.0"
   },
   "engines": {
