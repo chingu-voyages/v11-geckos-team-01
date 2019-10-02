@@ -137,25 +137,20 @@ app.post(`/update/template`,
   require('connect-ensure-login').ensureLoggedIn(), 
   async (req, res) => {
     console.log('\n')
-    console.log(req.body)
+    console.log('CREATE_TEMPLATE')
     console.log('\n')
-    await db.createTemplate({
+    db.createTemplate({
       userId: req.user.id,
       json: req.body.json,
       template:  req.body.template
     }).then((data) => {
-      console.log('DATA: ', data)
-    })
-    res.send({ message: `Created template for user ${req.user.username}` })
-  })
-
-app.get('/user/template/:guid',
-  require('connect-ensure-login').ensureLoggedIn(),
-  (req, res) => {
-    db.getTemplate({
-      userId: req.user.id, templateId: req.params.guid
-    }).then(({ json }) => {
-      res.json(JSON.parse(json))
+      return res.send({
+        message: `Created template for user ${req.user.username}`,
+        data,
+        status: 200
+      })
+    }).catch((error) => {
+      return res.send({ error, status: 500 })
     })
   })
 
@@ -166,17 +161,20 @@ app.put(`/user/template/:guid`,
     res.send({ message: `Updated template for user ${req.user.username}` })
   })
 
+app.get('/api/json/:guid', (req, res) => {
+  console.log(req.params.guid)
+  return db.getTemplate({
+    userId: req.user.id, templateId: req.params.guid
+  }).then(({ json }) => {
+    res.json(JSON.parse(json))
+  })
+})
+
 app.get('/:guid',
   require('connect-ensure-login').ensureLoggedIn(),
-  function(req, res) {
-    // res.render('profile', { user: req.user })
+  (req, res) => {
     console.log(req.user)
-    console.log(req.params)
-    res.send({
-      message: 'recieved GUID',
-      guid: req.params.guid,
-      user: req.user
-    })
+    req.send({ message: `Get template for user ${req.user.username}` })
   })
 
 app.listen(process.env['PORT'] || 8080)

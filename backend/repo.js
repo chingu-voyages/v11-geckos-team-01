@@ -15,11 +15,11 @@ console.log('USER: ', dbuser)
 
 const userSchema = new Schema({
   userId: String,
-  templates: Array
+  templateIds: Array
 })
 
 const templateSchema = new Schema({
-  templateId: String,
+  _id: String,
   json: String,
   userId: String,
   template: String,
@@ -31,6 +31,7 @@ const User = mongoose.model('User', userSchema)
 const Template = mongoose.model('Template', templateSchema)
 
 const connect = async (name = 'users') => {
+  console.log(name)
   const client = new MongoClient(uri)
   try {
     await client.connect()
@@ -65,7 +66,7 @@ const mlabService = {
       console.log('findOne: ', user)
 
       if (!user) {
-        collection.insertOne(new User({ userId, templates: [] }))
+        collection.insertOne(new User({ userId, templateIds: [] }))
       } else {
         console.log('\n')
         console.log('USER EXISTS')
@@ -77,38 +78,53 @@ const mlabService = {
     }
     client.close()
   },
-  getTemplate: ({ userId, templateId }) => {
+  getTemplate: ({ templateId }) => {
     console.log('\n')
-    console.log('USER_ID:', userId,'TEMPLATE_ID:', templateId)
+    console.log('TEMPLATE_ID:', templateId)
     console.log('\n')    
-    return connect().then(async (collection) => {
-      const user = await collection.findOne({ userId })
-      console.log(user)
-      return user.templates.find(({ id }) => templateId === id)
+    return connect('json').then((collection) => {
+      return collection.findOne({ _id: templateId })
     }).catch((error) => {
       console.log(error)
     })
-  },
-  createTemplate: async ({ userId, template, json }) => {
+  },  
+  // getTemplate: ({ userId, templateId }) => {
+  //   console.log('\n')
+  //   console.log('USER_ID:', userId,'TEMPLATE_ID:', templateId)
+  //   console.log('\n')    
+  //   return connect().then(async (collection) => {
+  //     const user = await collection.findOne({ userId })
+  //     console.log(user)
+  //     return user.templates.find(({ id }) => templateId === id)
+  //   }).catch((error) => {
+  //     console.log(error)
+  //   })
+  // },
+  createTemplate: ({ userId, template, json }) => {
+    console.log('CREATE NEW TEMPLATE...')
     const date = new Date().toLocaleString()
-    const nextState = new Template({
-      id: uuid(), json, userId, template, createdOn: date, updatedOn: date
+    const templateId = uuid()
+    const data = new Template({
+      _id: templateId, json, userId, template, createdOn: date, updatedOn: date
     })
-    return connect().then(async (collection) => {
-      const user = await collection.findOne({ userId })
-      const templates = [ ...user.templates, nextState ]
-      await collection.updateOne({ userId }, new User({ ...user, templates }))
+    return Promise.all([
+      // Update our user with the new template ID
+      connect().then(async (collection) => {
+        const user = await collection.findOne({ userId })
+        const templateIds = [ ...user.templateIds, templateId ]
+        await collection.updateOne({ userId }, new User({ ...user, templateIds }))
+      }),
+      // Add our template to the "json" collection
+      connect('json').then((collection) => {
+        return collection.insertOne(data)
+      })
+    ]).then(() => {
+      return data
     }).catch((error) => {
       console.log(error)
+      return error
     })
   }
-  // createUser: (data) => {
-  //   return this.connect((collection) => {
-  //     console.log(data)
-  //     collection.insert(data)
-  //     console.log('\nDONE\n')
-  //   })
-  // }
 }
 
 module.exports = mlabService

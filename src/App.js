@@ -102,7 +102,7 @@ class App extends React.Component {
     console.log(this.state.template)
     return schema
   }
-  generateJSON () {
+  async generateJSON () {
     console.log('CLICK THAT BITCH')
     let result = ''
     let lastNode = {}
@@ -149,15 +149,16 @@ class App extends React.Component {
     })
     console.log(result)
     // console.log(JSON.parse(result))
-    this.setState({ result, loaded: false })
 
     const url = `/update/template`
     const data = {
       json: result,
       template: this.state.docValue
     }
-    console.log({ ...data })
-    axios.post(url, data).then((data) => {
+    console.log(url)
+    this.setState({ result, loaded: false })
+    await axios.post(url, data).then((data) => {
+      console.log('TEMPLATE_UPDATED')
       console.log(data)
     }).finally(() => {
       this.setState({ loaded: true })
