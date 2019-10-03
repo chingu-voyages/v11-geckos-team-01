@@ -5,8 +5,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 
-console.log(axios)
-
 axios.interceptors.request.use((config) => {
   console.log(config)
   return config

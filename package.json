@@ -5,7 +5,9 @@
   "dependencies": {
     "@material/react-button": "^0.15.0",
     "@material/react-drawer": "^0.15.0",
+    "@material/react-list": "^0.15.0",
     "@material/react-material-icon": "^0.15.0",
+    "@material/react-top-app-bar": "^0.15.0",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
     "codemirror": "^5.48.4",

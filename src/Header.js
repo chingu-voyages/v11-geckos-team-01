@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { Fragment } from 'react'
 
 import axios from 'axios'
 
@@ -17,30 +17,16 @@ import Button from '@material/react-button'
 import MaterialIcon from '@material/react-material-icon'
 
 import '@material/react-button/dist/button.css'
-import '@material/react-material-icon/dist/material-icon.css';
+import '@material/react-material-icon/dist/material-icon.css'
 
 
-import './Header.css'
-
+import styles from './Header.css'
 
 const Codegen = <MaterialIcon icon="cached" />
 
 const LoginIcon  = <MaterialIcon icon="open_in_new"/>
 
 function Header (props) {
-  console.log(props)
-
-  const isAuthenticated = () => !!props.user
-    // try {
-    //   const user = JSON.parse(localStorage.getItem('user'))
-    //   console.log(user)
-    //   return !!user
-    // } catch (error) {
-    //   console.log(error)
-    //   return false
-    // }
-  // }
-
   const Logout = () => (
     <Route render={({ history }) => (
       <Button
@@ -51,28 +37,17 @@ function Header (props) {
           localStorage.removeItem('user')
           window.location.reload()
         }}
-        className="logout btn"
+        className={styles.logout}
       >
         Logout
       </Button>  
     )} />
   )
 
-  // const Logout = () => (
-  //   <Button
-  //     dense
-  //     outlined
-  //     href="/logout"
-  //     className="btn"
-  //   >
-  //     Logout
-  //   </Button> 
-  // )
-  
   const Login = withRouter(({ history }) => (
     <Button
       href="/login/github"
-      className="login"
+      className={styles.login}
       icon={LoginIcon}
       outlined
       dense
@@ -82,10 +57,9 @@ function Header (props) {
   ))
 
   return (
-    <div className="header">
-      {/* CONTENT HERE */}
+    <Fragment>
       <Button
-        className="codegen"
+        className={styles.codegen}
         icon={Codegen}
         onClick={props.callback}
         raised
@@ -93,8 +67,8 @@ function Header (props) {
       >
         Generate
       </Button>
-      {isAuthenticated() ?  <Logout /> : <Login />}
-    </div>
+      {props.user ?  <Logout /> : <Login />}
+    </Fragment>
   )
 }
 

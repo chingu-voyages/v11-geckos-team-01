@@ -1,10 +1,37 @@
 import React from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
-import './App.css'
 
 import uuid from 'uuid/v4'
 import Mustache from 'mustache'
 import axios from 'axios'
+
+import Drawer, {
+  DrawerHeader,
+  DrawerTitle,
+  DrawerContent,
+  DrawerAppContent
+} from '@material/react-drawer'
+
+import TopAppBar, {
+  TopAppBarFixedAdjust,
+  TopAppBarSection,
+  TopAppBarIcon,
+  TopAppBarRow
+} from '@material/react-top-app-bar'
+import MaterialIcon from '@material/react-material-icon'
+
+import List, {
+  ListItem,
+  ListItemGraphic,
+  ListItemText
+} from '@material/react-list'
+
+import '@material/react-list/dist/list.css'
+import '@material/react-drawer/dist/drawer.css'
+import '@material/react-top-app-bar/dist/top-app-bar.css'
+import '@material/react-material-icon/dist/material-icon.css'
+
+import './App.css'
 
 import Editor from './Editor'
 import Preview from './Preview'
@@ -23,12 +50,27 @@ class App extends React.Component {
     this.state = {
       user: null,
       value: '',
-      result: ''
+      result: '',
+      open: false,
+      selectedIndex: 0
     }
     this.findNodes = this.findNodes.bind(this)
     this.generateJSON = this.generateJSON.bind(this)
     this.repeatNode = this.repeatNode.bind(this)
     this.onChange = this.onChange.bind(this)
+    this.toggleDrawer = this.toggleDrawer.bind(this)
+  }
+  // mainContentEl = React.createRef()
+  // focusFirstFocusableItem = () => {
+  //   this.mainContentEl.current.querySelector('input, button').focus()
+  // }
+  onDrawerClose = () => {
+    this.setState({ open: false })
+    this.focusFirstFocusableItem()
+  }  
+  toggleDrawer () {
+    console.log(this.state.open)
+    this.setState({ open: !this.state.open })
   }
   componentDidMount () {
     axios.get('/profile', { headers: {
@@ -45,7 +87,6 @@ class App extends React.Component {
       }
     })
   }
-
   repeatNode (callback, node, mode) {
     const args = callback.match(/\d+/g)
     const parsed = args.map((str) => parseInt(str, 10))
@@ -161,30 +202,74 @@ class App extends React.Component {
   render () {
     return (
       <Router>
-        <div className="app">
-          <Header
-            user={this.state.user}
-            callback={this.generateJSON}        
-          />
-          <div className="editor-wrapper">
-            <div className="flex-container">
-              <div className="flex-item">
-                <Editor
-                  onChange={this.onChange}
-                  viewPortMargin={Infinity}
-                  defaultValue={initialValue}
-                  readOnly={false}
-                />
+        <div className='drawer-container'>
+          <Drawer
+            className="drawer"
+            dismissible
+            open={this.state.open}
+            onClose={this.drawerOnClose}
+          >
+            <DrawerHeader>
+              <DrawerTitle tag='h1'>
+                <strong>JSON_GENERATOR {"{ }"}</strong>
+              </DrawerTitle>
+            </DrawerHeader>
+
+            <DrawerContent>
+              <List singleSelection selectedIndex={this.state.selectedIndex}>
+                <ListItem>
+                  <ListItemGraphic graphic={<MaterialIcon icon='folder'/>} />
+                  <ListItemText primaryText='Templates' />
+                </ListItem>
+              </List>
+            </DrawerContent>
+          </Drawer>
+
+          {/* ref={this.mainContentEl} */}
+          <DrawerAppContent className='drawer-app-content'>
+            <TopAppBar
+              title='Inbox'
+            >
+              <TopAppBarRow
+                className="header"
+                style={{ overflowX: "hidden" }}
+              >
+                <TopAppBarSection align='start' role='toolbar'>
+                  <TopAppBarIcon
+                    navIcon
+                    onClick={this.toggleDrawer}
+                  >
+                    <i className='material-icons'>menu</i>
+                  </TopAppBarIcon>
+                  <Header
+                    className="topbar-actions"
+                    user={this.state.user}
+                    callback={this.generateJSON}        
+                  />   
+                </TopAppBarSection>
+              </TopAppBarRow>
+            </TopAppBar>
+            <TopAppBarFixedAdjust>
+              <div className="editor-wrapper">
+                <div className="flex-container">
+                  <div className="flex-item">
+                    <Editor
+                      onChange={this.onChange}
+                      viewPortMargin={Infinity}
+                      defaultValue={initialValue}
+                      readOnly={false}
+                    />
+                  </div>
+                  <div className="flex-item">
+                    <Preview
+                      defaultValue={this.state.result}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="flex-item">
-                <Preview
-                  defaultValue={this.state.result}
-                />
-              </div>
-            </div>
-          </div>
-          <Footer />
-        </div>        
+            </TopAppBarFixedAdjust>
+          </DrawerAppContent>
+        </div>
       </Router>
     )    
   }
