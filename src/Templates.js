@@ -1,17 +1,11 @@
 
-import React, { Fragment } from 'react'
+import React from 'react'
 
 import PropTypes from 'prop-types'
 
 import MaterialIcon from '@material/react-material-icon'
 
-import {
-  BrowserRouter as Router,
-  // Route,
-  Link,
-  // Redirect,
-  // withRouter
-} from "react-router-dom"
+import { Route } from "react-router-dom"
 
 import List, {
   ListItem,
@@ -21,20 +15,26 @@ import List, {
 
 function Templates (props) {
   return (
-    <Fragment>
+    <Route render={({ history }) => (
       <List singleSelection selectedIndex={props.selectedIndex}>
         {
-          props.templates.map(({ _id, name, createdOn }, index) => (
-            // onClick={() => router.push(_id)}
-            <ListItem to={_id}>
+          props.templates && 
+          props.templates.length ?
+          props.templates.map(({ _id, name, createdOn }) => (
+            <ListItem key={_id} onClick={() => history.push(`/${_id}`)}>
               <ListItemGraphic graphic={<MaterialIcon icon='folder'/>} />
               <ListItemText primaryText={name || createdOn } />
             </ListItem>
             )
           )
+          : (
+            <ListItem disabled>
+              <ListItemText primaryText="No Data Available" />
+            </ListItem>
+          )
         }
-      </List>      
-    </Fragment>
+      </List>
+    )} />
   )
 }
 
@@ -43,7 +43,8 @@ Templates.propTypes = {
   //
   // An array of objects
   //
-  // This should be sourced from the the users collection.
+  // "templates" prop should be sourced from the the users collection.
+  //
   templates: PropTypes.arrayOf(
     PropTypes.shape({
       _id: PropTypes.string,

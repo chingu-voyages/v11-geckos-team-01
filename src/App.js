@@ -29,7 +29,7 @@ import './App.css'
 import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
-import Footer from './Footer'
+// import Footer from './Footer'
 import Templates from './Templates'
 
 const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    notes: [ { 'repeat(5, 10)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`
@@ -45,7 +45,7 @@ class App extends React.Component {
       user: null,
       value: '',
       result: '',
-      open: false,
+      open: true,
       templates: [],
       selectedIndex: 0
     }
@@ -68,6 +68,7 @@ class App extends React.Component {
     this.setState({ open: !this.state.open })
   }
   componentDidMount () {
+    // THIS ENDPOINT IS FOR DEVELOPMENT ONLY
     const url = 'https://next.json-generator.com/api/json/get/Ek4J2QRPw'
     axios.get(url).then(({ data }) => {
       console.log(data)
