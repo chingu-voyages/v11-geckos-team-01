@@ -18,13 +18,6 @@ import TopAppBar, {
   TopAppBarIcon,
   TopAppBarRow
 } from '@material/react-top-app-bar'
-import MaterialIcon from '@material/react-material-icon'
-
-import List, {
-  ListItem,
-  ListItemGraphic,
-  ListItemText
-} from '@material/react-list'
 
 import '@material/react-list/dist/list.css'
 import '@material/react-drawer/dist/drawer.css'
@@ -37,6 +30,7 @@ import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
 import Footer from './Footer'
+import Templates from './Templates'
 
 const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    notes: [ { 'repeat(5, 10)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`
 
@@ -52,6 +46,7 @@ class App extends React.Component {
       value: '',
       result: '',
       open: false,
+      templates: [],
       selectedIndex: 0
     }
     this.findNodes = this.findNodes.bind(this)
@@ -73,6 +68,11 @@ class App extends React.Component {
     this.setState({ open: !this.state.open })
   }
   componentDidMount () {
+    const url = 'https://next.json-generator.com/api/json/get/Ek4J2QRPw'
+    axios.get(url).then(({ data }) => {
+      console.log(data)
+      this.setState({ templates: data })
+    })
     axios.get('/profile', { headers: {
       'Access-Control-Allow-Origin': '*'
     }}).then(({ data }) => {
@@ -216,12 +216,10 @@ class App extends React.Component {
             </DrawerHeader>
 
             <DrawerContent>
-              <List singleSelection selectedIndex={this.state.selectedIndex}>
-                <ListItem>
-                  <ListItemGraphic graphic={<MaterialIcon icon='folder'/>} />
-                  <ListItemText primaryText='Templates' />
-                </ListItem>
-              </List>
+              <Templates
+                selctedIndex={this.state.selectedIndex}
+                templates={this.state.templates}
+              />
             </DrawerContent>
           </Drawer>
 
