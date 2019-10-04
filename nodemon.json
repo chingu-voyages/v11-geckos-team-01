@@ -1,0 +1,8 @@
+{
+  "restartable": "rs",
+  "ignore": ["src", ".git", "build"],
+  "watch": ["backend"],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
