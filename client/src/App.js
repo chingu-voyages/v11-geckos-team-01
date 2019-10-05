@@ -4,14 +4,35 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import uuid from 'uuid/v4';
 import Mustache from 'mustache';
 import axios from 'axios';
-import template from './config/template';
+
+import isAuthorized from './config/isAuthorized';
+
+import Drawer, {
+  DrawerHeader,
+  DrawerTitle,
+  DrawerContent,
+  DrawerAppContent
+} from '@material/react-drawer';
+
+import TopAppBar, {
+  TopAppBarFixedAdjust,
+  TopAppBarSection,
+  TopAppBarIcon,
+  TopAppBarRow
+} from '@material/react-top-app-bar';
+
+import '@material/react-list/dist/list.css';
+import '@material/react-drawer/dist/drawer.css';
+import '@material/react-top-app-bar/dist/top-app-bar.css';
+import '@material/react-material-icon/dist/material-icon.css';
+
+import './App.css';
 
 import Editor from './Editor';
 import Preview from './Preview';
 import Header from './Header';
-import Footer from './Footer';
-
-import './App.css';
+// import Footer from './Footer'
+import Templates from './Templates';
 
 const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    notes: [ { 'repeat(5, 10)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`;
 
@@ -22,45 +43,50 @@ class App extends React.Component {
     super(props);
     this.state = {
       user: null,
-      docValue: '',
-      template: '',
-      templateId: '',
-      loaded: true,
-      result: ''
+      value: '',
+      result: '',
+      open: true,
+      templates: [],
+      selectedIndex: 0
     };
-
     this.findNodes = this.findNodes.bind(this);
     this.generateJSON = this.generateJSON.bind(this);
     this.repeatNode = this.repeatNode.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.toggleDrawer = this.toggleDrawer.bind(this);
   }
-  componentDidMount() {
-    axios
-      .get('/auth/current_user', {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        }
-      })
-      .then(({ data }) => {
-        const user = data.user;
-
-        if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.setState({ user });
-        }
-      });
+  onDrawerClose = () => {
+    this.setState({ open: false });
+    this.focusFirstFocusableItem();
+  };
+  toggleDrawer() {
+    console.log(this.state.open);
+    this.setState({ open: !this.state.open });
   }
-
+  async componentDidMount() {
+    // THIS ENDPOINT IS FOR DEVELOPMENT ONLY
+    const url = 'https://next.json-generator.com/api/json/get/Ek4J2QRPw';
+    axios.get(url).then(({ data }) => {
+      console.log(data);
+      this.setState({ templates: data });
+    });
+    const user = await isAuthorized();
+    console.log('[App state]', user);
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+      this.setState({ user });
+    }
+  }
   repeatNode(callback, node, mode) {
     const args = callback.match(/\d+/g);
     const parsed = args.map((str) => parseInt(str, 10));
+    // console.log(parsed)
 
     const max = parsed[1];
     const min = parsed[0];
 
     let i = Math.floor(Math.random() * (max + 1 - min) + min);
+    // console.log(`Repeat this object ${i} times.`)
 
     const result = [];
     while (--i) {
@@ -77,16 +103,22 @@ class App extends React.Component {
         schema[schema.length - 1].node[name] = `{{&${name}}}`;
       }
       schema.push({ node, callback, name });
+      // console.log(schema)
     };
     (function recurse(context, name) {
+      console.log(context, name);
       let prop;
+      // debugger
       const regex = /repeat\((\w|\d|\s|,)+\)/g;
+      // debugger
       const repeats = context[0] && Object.keys(context[0])[0].match(regex);
       if (context[0] && repeats) {
+        // debugger
         prop = repeats[0];
         callback({ node: context[0][prop], callback: repeats[0], name });
         return recurse(context[0][prop]);
       } else {
+        // debugger
         for (let prop in context) {
           if (Array.isArray(context[prop])) {
             // callback({ name: prop, node: context[prop] })
@@ -94,10 +126,12 @@ class App extends React.Component {
           }
         }
       }
-    })(this.state.template);
+    })(this.state.value);
+    console.log(this.state.value);
     return schema;
   }
-  async generateJSON() {
+  generateJSON() {
+    console.log('CLICK THAT BITCH');
     let result = '';
     let lastNode = {};
     const config = {
@@ -105,9 +139,14 @@ class App extends React.Component {
       guid: () => uuid()
     };
     const arr = this.findNodes();
+    debugger;
+    console.log(arr);
     arr.map(({ node, callback, name }, i) => {
       lastNode = { node, callback, name };
       let currentNode = null;
+      // let nextNode = arr[i + 1]
+      // console.log(lastNode)
+      // debugger
       if (arr[i + 1]) {
         currentNode = arr[i + 1].name;
       }
@@ -119,25 +158,26 @@ class App extends React.Component {
       }
       if (lastNode.name) {
         config[lastNode.name] = () => {
+          // console.log(repeatNode(lastNode.callback, lastNode.node, 'json'))
           return this.repeatNode(lastNode.callback, lastNode.node, 'json');
         };
       }
+      // console.log(config)
       const string = Mustache.render(template, config);
       result = string.replace(/("\[)/g, '[').replace(/(\]")/g, ']');
+      console.log(JSON.parse(result));
+      // console.log(currentNode)
+      // console.log('----------------------END--------------------------------')
+      // console.log(result)
     });
-
-    const data = {
-      json: result,
-      template: this.state.docValue
-    };
-    this.setState({ result, loaded: false });
-    const response = await template.post('/', data);
-    if (response.ok) {
-      this.setState({ loaded: true });
-    }
+    console.log(result);
+    // console.log(JSON.parse(result))
+    this.setState({ result });
   }
-  onChange(object, docValue) {
-    this.setState({ template: object, docValue });
+  onChange(nextState) {
+    console.log(nextState);
+    this.setState({ value: nextState });
+    console.log(this.state.value);
     // try {
 
     // } catch (error) {
@@ -147,24 +187,61 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <div className="app">
-          <Header user={this.state.user} callback={this.generateJSON} />
-          <div className="editor-wrapper">
-            <div className="flex-container">
-              <div className="flex-item">
-                <Editor
-                  onChange={this.onChange}
-                  viewPortMargin={Infinity}
-                  defaultValue={initialValue}
-                  readOnly={false}
-                />
+        <div className="drawer-container">
+          <Drawer
+            className="drawer"
+            dismissible
+            open={this.state.open}
+            onClose={this.drawerOnClose}
+          >
+            <DrawerHeader>
+              <DrawerTitle tag="h1">
+                <strong>JSON_GENERATOR {'{ }'}</strong>
+              </DrawerTitle>
+            </DrawerHeader>
+
+            <DrawerContent>
+              <Templates
+                selctedIndex={this.state.selectedIndex}
+                templates={this.state.templates}
+              />
+            </DrawerContent>
+          </Drawer>
+
+          {/* ref={this.mainContentEl} */}
+          <DrawerAppContent className="drawer-app-content">
+            <TopAppBar title="Inbox">
+              <TopAppBarRow className="header" style={{ overflowX: 'hidden' }}>
+                <TopAppBarSection align="start" role="toolbar">
+                  <TopAppBarIcon navIcon onClick={this.toggleDrawer}>
+                    <i className="material-icons">menu</i>
+                  </TopAppBarIcon>
+                  <Header
+                    className="topbar-actions"
+                    user={this.state.user}
+                    callback={this.generateJSON}
+                  />
+                </TopAppBarSection>
+              </TopAppBarRow>
+            </TopAppBar>
+            <TopAppBarFixedAdjust>
+              <div className="editor-wrapper">
+                <div className="flex-container">
+                  <div className="flex-item">
+                    <Editor
+                      onChange={this.onChange}
+                      viewPortMargin={Infinity}
+                      defaultValue={initialValue}
+                      readOnly={false}
+                    />
+                  </div>
+                  <div className="flex-item">
+                    <Preview defaultValue={this.state.result} />
+                  </div>
+                </div>
               </div>
-              <div className="flex-item">
-                <Preview defaultValue={this.state.result} />
-              </div>
-            </div>
-          </div>
-          <Footer />
+            </TopAppBarFixedAdjust>
+          </DrawerAppContent>
         </div>
       </Router>
     );

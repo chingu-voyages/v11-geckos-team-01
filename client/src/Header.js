@@ -23,11 +23,13 @@ const Codegen = <MaterialIcon icon="cached" />;
 const LoginIcon = <MaterialIcon icon="open_in_new" />;
 
 function Header(props) {
+  console.log(props.user);
   const Logout = () => (
     <Route
       render={({ history }) => (
         <Button
           dense
+          color="secondary"
           outlined
           onClick={() => {
             history.push('/logout');
@@ -54,13 +56,7 @@ function Header(props) {
   // )
 
   const Login = withRouter(({ history }) => (
-    <Button
-      href="/auth/github"
-      className="login"
-      icon={LoginIcon}
-      outlined
-      dense
-    >
+    <Button href="/auth/github" icon={LoginIcon} outlined dense>
       Login with Github
     </Button>
   ));
