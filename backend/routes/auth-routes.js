@@ -24,8 +24,12 @@ authRoute.get(
 /**
  * Get Current user route
  */
-authRoute.get('/current_user', requireLogin(), (req, res) => {
-  res.json(req.user);
+authRoute.get('/current_user', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.json({ user: req.user });
+  }
+
+  return res.status(200).json({ user: false });
 });
 
 /**
