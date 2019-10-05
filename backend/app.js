@@ -4,8 +4,10 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const cors = require('cors');
+const path = require('path');
 
 const authRoutes = require('./routes/auth-routes.js');
+const templateRoutes = require('./routes/template-routes');
 
 require('./services/passport.js');
 
@@ -34,7 +36,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', authRoutes);
+app.use('/api/templates', templateRoutes);
 
-app.get('/', express.static('./build'));
+app.get('/', express.static(path.resolve(__dirname, '../client/build')));
 
 module.exports = app;

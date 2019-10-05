@@ -2,7 +2,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const http = require('http');
 
-const app = require('./backend/app');
+const app = require('./app');
 
 /**
  * Port to listen on

@@ -2,65 +2,28 @@
   "name": "v11-geckos-team-01",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@material/react-button": "^0.15.0",
-    "@material/react-material-icon": "^0.15.0",
-    "axios": "^0.19.0",
-    "body-parser": "^1.19.0",
-    "codemirror": "^5.48.4",
-    "connect-ensure-login": "^0.1.1",
-    "cookie-parser": "^1.4.4",
-    "cors": "^2.8.5",
-    "dotenv": "^8.1.0",
-    "express": "^4.17.1",
-    "express-session": "^1.16.2",
-    "http-proxy-middleware": "^0.20.0",
-    "lodash.debounce": "^4.0.8",
-    "lodash.isequal": "^4.5.0",
-    "mongodb": "^3.3.2",
-    "mongoose": "^5.7.1",
-    "morgan": "^1.9.1",
-    "mustache": "^3.1.0",
-    "passport": "^0.4.0",
-    "passport-github": "^1.1.0",
-    "path": "^0.12.7",
-    "prop-types": "^15.7.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-router": "^5.1.1",
-    "react-router-dom": "^5.1.1",
-    "react-scripts": "3.1.1",
-    "request-promise": "^4.2.4",
-    "uuid": "^3.3.3"
-  },
   "scripts": {
-    "heroku-postbuild": "react-scripts build",
-    "start": "node .",
+    "postinstall": "run-s setup:client setup:backend",
+    "setup:client": "cd client && npm install && cd ..",
+    "setup:backend": "cd backend && npm install && cd ..",
+    "build": "npm --silent --prefix client run build",
     "dev": "concurrently npm:dev:*",
-    "dev:server": "nodemon index.js",
-    "dev:client": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev:client": "npm --prefix client run start",
+    "dev:server": "npm --prefix backend run dev",
+    "eject": "react-scripts eject",
+    "heroku-postbuild": "react-scripts build",
+    "start": "npm --prefix backend run start",
+    "test": "run-s test:*",
+    "test:client": "cross-env CI=true npm --silent --prefix client run test",
+    "test:backend": "npm --silent --prefix backend run test"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cross-env": "^6.0.3"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
-    "nodemon": "^1.19.3",
+    "npm-run-all": "^4.1.5",
     "standard": "^14.1.0"
   },
   "engines": {

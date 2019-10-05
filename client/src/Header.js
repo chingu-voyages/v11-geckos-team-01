@@ -1,7 +1,5 @@
 import React from 'react';
 
-import axios from 'axios';
-
 import {
   BrowserRouter as Router,
   Route,
@@ -25,7 +23,6 @@ const Codegen = <MaterialIcon icon="cached" />;
 const LoginIcon = <MaterialIcon icon="open_in_new" />;
 
 function Header(props) {
-  console.log(props);
   const Logout = () => (
     <Route
       render={({ history }) => (
