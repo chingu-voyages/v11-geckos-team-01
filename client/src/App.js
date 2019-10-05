@@ -139,8 +139,6 @@ class App extends React.Component {
       guid: () => uuid()
     };
     const arr = this.findNodes();
-    debugger;
-    console.log(arr);
     arr.map(({ node, callback, name }, i) => {
       lastNode = { node, callback, name };
       let currentNode = null;
