@@ -13,9 +13,8 @@ import Preview from './Preview'
 import Header from './Header'
 import Footer from './Footer'
 
-const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    notes: [ { 'repeat(5, 10)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`
-
-// import { formatJSONfromString } from './Utils'
+// const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    notes: [ { 'repeat(5, 10)': { text: null } } ],\n    picture: 'http://placehold.it/32x32',\n    balance: '{{floating(1000, 4000, 2, "$0,0.00")}}'\n  }\n}]`
+import initialValue from './initial.js'
 
 const repeats = (node = {}) =>{
   const regex = /repeat\((\w|\d|\s|,)+\)/g
@@ -29,7 +28,8 @@ class App extends React.Component {
     this.state = {
       user: null,
       value: '',
-      result: ''
+      result: '',
+      initialValue
     }
     this.generateJSON = this.generateJSON.bind(this)
     this.repeatNode = this.repeatNode.bind(this)
@@ -37,6 +37,9 @@ class App extends React.Component {
     this.findNodes = this.findNodes.bind(this)
   }
   componentDidMount () {
+    // this.setState({
+    //   initialValue: JSON.stringify(initial, null, 2).toString()
+    // })
     axios.get('/profile', { headers: {
       'Access-Control-Allow-Origin': '*'
     }}).then(({ data }) => {
@@ -151,7 +154,7 @@ class App extends React.Component {
                 <Editor
                   onChange={this.onChange}
                   viewPortMargin={Infinity}
-                  defaultValue={initialValue}
+                  defaultValue={this.state.initialValue}
                   readOnly={false}
                 />
               </div>
