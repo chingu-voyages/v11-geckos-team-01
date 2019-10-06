@@ -6,6 +6,8 @@ import uuid from 'uuid/v4'
 import Mustache from 'mustache'
 import axios from 'axios'
 
+import cloneDeep from 'lodash/cloneDeep'
+
 import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
@@ -15,6 +17,10 @@ const initialValue = `[{\n  'repeat(5, 15)': {\n    accountId: '{{guid}}',\n    
 
 // import { formatJSONfromString } from './Utils'
 
+const repeats = (node = {}) =>{
+  const regex = /repeat\((\w|\d|\s|,)+\)/g
+  return Object.keys(node)[0].match(regex)
+}
 class App extends React.Component {
   // const [value, setValue] = useState('')
   // const [result, setResult] = useState('')
@@ -25,10 +31,10 @@ class App extends React.Component {
       value: '',
       result: ''
     }
-    this.findNodes = this.findNodes.bind(this)
     this.generateJSON = this.generateJSON.bind(this)
     this.repeatNode = this.repeatNode.bind(this)
     this.onChange = this.onChange.bind(this)
+    this.bfs_findNodes = this.bfs_findNodes.bind(this)
   }
   componentDidMount () {
     axios.get('/profile', { headers: {
@@ -45,7 +51,6 @@ class App extends React.Component {
       }
     })
   }
-
   repeatNode (callback, node, mode) {
     const args = callback.match(/\d+/g)
     const parsed = args.map((str) => parseInt(str, 10))
@@ -63,59 +68,76 @@ class App extends React.Component {
     }
     return mode === 'json' ? JSON.stringify(result) : result
   }
-  findNodes () {
-    // https://stackoverflow.com/questions/48612674/depth-first-traversal-with-javascript
+  bfs_findNodes () {
+    // console.log(this.state.value)
+    const queue = [...this.state.value]
     const schema = []
-
+    const explored = []
     const callback = ({ node, callback, name = '_root' }) => {
-      if (schema.length) {
-        schema[schema.length - 1].node[name] = `{{&${name}}}`
-      }
-      schema.push({ node, callback, name })
-      // console.log(schema)
-    }
-    (function recurse (context, name) {
-      console.log(context, name)
-      let prop
-      // debugger
-      const regex = /repeat\((\w|\d|\s|,)+\)/g
-      // debugger
-      const repeats = context[0] && Object.keys(context[0])[0].match(regex)
-      if (context[0] && repeats) {
-        // debugger
-        prop = repeats[0]
-        callback({ node: context[0][prop], callback: repeats[0], name })
-        return recurse(context[0][prop])
-      } else {
-        // debugger
-        for (let prop in context) {
-          if (Array.isArray(context[prop])) {
-            // callback({ name: prop, node: context[prop] })
-            return recurse(context[prop], prop)
-          }
+      const nextState = cloneDeep(node)
+      for (let prop in node) {
+        if (Array.isArray(node[prop])) {
+          console.log(`this prop should be repeated: ${prop}`)
+          nextState[prop] = `{{&${prop}}}`
         }
       }
-    })(this.state.value)
-    console.log(this.state.value)
+      return schema.push({ node: nextState, callback, name })
+    }
+    // const logger = (node) => {
+    //   schema.push(node)
+    //   return console.log(node)
+    // }
+    function BFS (callback, root) {
+      // var queue=[this];
+      let node = [root]
+      let name
+      while(queue.length > 0) {
+        node = queue.shift()
+        name = explored.shift()
+        let prop
+        // debugger
+        if (node && repeats(node)) {
+          prop = repeats(node)
+          callback({ node: node[prop], callback: repeats(node)[0], name })
+          explored.push(prop)
+          queue.push(node[prop])
+          // console.log(queue)
+        } else {
+          // debugger
+          for (let prop in node) {
+            // debugger
+            if (Array.isArray(node[prop])) {
+              // queue.push(node[prop], prop, node)
+              // console.log(prop)
+              // console.log(node[prop][0])
+              explored.push(prop)
+              queue.push(node[prop][0])
+            }
+          }
+          console.log(queue)
+        }
+      } 
+    }
+    BFS(callback, this.state.value)
+    console.log(schema)
     return schema
   }
   generateJSON () {
-    console.log('CLICK THAT BITCH')
     let result = ''
     let lastNode = {}
     const config = {
       // guid: () => (Math.random() * 999999).toFixed(2)
       guid: () => uuid()
     }
-    const arr = this.findNodes()
-    debugger
-    console.log(arr)
+    const arr = this.bfs_findNodes()
+    // console.log(arr)
+    // debugger
     arr.map(({ node, callback, name }, i) => {
       lastNode = { node, callback, name }
       let currentNode = null
       // let nextNode = arr[i + 1]
       // console.log(lastNode)
-      // debugger
+      debugger
       if (arr[i + 1]) {
         currentNode = arr[i + 1].name
       }
@@ -139,12 +161,11 @@ class App extends React.Component {
       result = string
         .replace(/("\[)/g, "[")
         .replace(/(\]")/g, "]")
-      console.log(JSON.parse(result))
+      // console.log(JSON.parse(result))
       // console.log(currentNode)
       // console.log('----------------------END--------------------------------')
       // console.log(result)
     })
-    console.log(result)
     // console.log(JSON.parse(result))
     this.setState({ result })
   }
