@@ -42,7 +42,7 @@ class Editor extends React.Component {
   }
   componentWillReceiveProps (props) {
     if (props.readOnly) {
-      console.log(props)
+      // console.log(props)
       try {
         this.codeMirror.getDoc().setValue(
           JSON.stringify(JSON.parse(props.defaultValue), null, 2)

@@ -28,8 +28,6 @@ const Codegen = <MaterialIcon icon="cached" />
 const LoginIcon  = <MaterialIcon icon="open_in_new"/>
 
 function Header (props) {
-  console.log(props)
-
   const isAuthenticated = () => !!props.user
     // try {
     //   const user = JSON.parse(localStorage.getItem('user'))
