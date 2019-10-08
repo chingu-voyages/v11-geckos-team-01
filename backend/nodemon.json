@@ -1,7 +1,8 @@
 {
   "restartable": "rs",
-  "ignore": ["*.test.js"],
-  "watch": ["backend"],
+  "ignore": [
+    "*.test.js"
+  ],
   "env": {
     "NODE_ENV": "development"
   }
