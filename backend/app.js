@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
 
 const authRoutes = require('./routes/auth-routes.js');
 const templateRoutes = require('./routes/template-routes');
@@ -19,6 +20,7 @@ app.use([
   express.urlencoded({ extended: true }),
   cors(),
   cookieParser(),
+  helmet(), // adds some security
   session({
     secret: process.env.COOKIE_SECRET || 'keyboard cat',
     resave: true,
