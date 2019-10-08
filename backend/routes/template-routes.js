@@ -16,7 +16,7 @@ templateRoutes.get('/', requireLogin(), async (req, res) => {
 
 templateRoutes.post('/', requireLogin(), async (req, res) => {
   const template = new Template(req.body);
-  const user = req.user;
+  const { user } = req;
 
   template.userId = user._id;
 
