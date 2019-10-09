@@ -51,4 +51,20 @@ templateRoutes.put('/:id', requireLogin(), async (req, res, next) => {
   }
 });
 
+templateRoutes.get('/:id', async (req, res, next) => {
+  const templateId = req.params.id;
+
+  try {
+    const template = await Template.findById(templateId);
+
+    if (template) {
+      return res.status(200).json(template);
+    }
+
+    return res.statusCode(404);
+  } catch (error) {
+    return next(error);
+  }
+});
+
 module.exports = templateRoutes;
