@@ -1,15 +1,4 @@
-
 import React from 'react'
-
-import axios from 'axios'
-
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-  withRouter
-} from "react-router-dom"
 
 import PropTypes from 'prop-types'
 
@@ -19,65 +8,37 @@ import MaterialIcon from '@material/react-material-icon'
 import '@material/react-button/dist/button.css'
 import '@material/react-material-icon/dist/material-icon.css';
 
-
 import './Header.css'
-
 
 const Codegen = <MaterialIcon icon="cached" />
 
-const LoginIcon  = <MaterialIcon icon="open_in_new"/>
+const LoginIcon = <MaterialIcon icon="open_in_new" />
 
-function Header (props) {
+function Header(props) {
   const isAuthenticated = () => !!props.user
-    // try {
-    //   const user = JSON.parse(localStorage.getItem('user'))
-    //   console.log(user)
-    //   return !!user
-    // } catch (error) {
-    //   console.log(error)
-    //   return false
-    // }
-  // }
 
   const Logout = () => (
-    <Route render={({ history }) => (
-      <Button
-        dense
-        outlined
-        onClick={() => {
-          history.push('/logout')
-          localStorage.removeItem('user')
-          window.location.reload()
-        }}
-        className="logout btn"
-      >
-        Logout
-      </Button>  
-    )} />
+    <Button
+      dense
+      outlined
+      href="/auth/logout"
+      className="logout btn"
+    >
+      Logout
+      </Button>
   )
 
-  // const Logout = () => (
-  //   <Button
-  //     dense
-  //     outlined
-  //     href="/logout"
-  //     className="btn"
-  //   >
-  //     Logout
-  //   </Button> 
-  // )
-  
-  const Login = withRouter(({ history }) => (
+  const Login = () => (
     <Button
-      href="/login/github"
+      href="/auth/github"
       className="login"
       icon={LoginIcon}
       outlined
       dense
     >
       Login with Github
-    </Button>      
-  ))
+    </Button>
+  )
 
   return (
     <div className="header">
@@ -91,7 +52,7 @@ function Header (props) {
       >
         Generate
       </Button>
-      {isAuthenticated() ?  <Logout /> : <Login />}
+      {isAuthenticated() ? <Logout /> : <Login />}
     </div>
   )
 }
