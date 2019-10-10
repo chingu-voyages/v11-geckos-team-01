@@ -41,7 +41,7 @@ const connect = async (name = 'users') => {
   } catch (error) {
     console.log(error);
   }
-  client.close();
+  return client.close();
 };
 const mlabService = {
   pool: null,
