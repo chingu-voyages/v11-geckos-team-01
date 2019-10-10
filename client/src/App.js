@@ -156,7 +156,7 @@ class App extends React.Component {
     this.setState({ open: false })
     this.focusFirstFocusableItem()
   }
-
+  
   toggleDrawer = () => {
     this.setState((prevState) => { return { open: !prevState.open } })
   }
@@ -189,7 +189,9 @@ class App extends React.Component {
 
           <DrawerAppContent className="drawer-app-content">
             <TopAppBar title="Inbox">
-              <TopAppBarRow className="header" style={{ overflowX: 'hidden' }}>
+              <TopAppBarRow
+                className={`header ${this.state.open ? 'right-pad' : ''}`}
+              >
                 <TopAppBarSection align="start" role="toolbar">
                   <TopAppBarIcon navIcon onClick={this.toggleDrawer}>
                     <i className="material-icons">menu</i>

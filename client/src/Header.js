@@ -15,14 +15,12 @@ const Codegen = <MaterialIcon icon="cached" />
 const LoginIcon = <MaterialIcon icon="open_in_new" />
 
 function Header(props) {
-  const isAuthenticated = () => !!props.user
-
   const Logout = () => (
     <Button
       dense
       outlined
       href="/auth/logout"
-      className="logout btn"
+      className="logout"
     >
       Logout
       </Button>
@@ -51,7 +49,7 @@ function Header(props) {
       >
         Generate
       </Button>
-      {isAuthenticated() ? <Logout /> : <Login />}
+      {props.user ? <Logout /> : <Login />}
     </>
   )
 }
