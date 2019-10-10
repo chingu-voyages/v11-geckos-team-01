@@ -1,0 +1,9 @@
+{
+  "restartable": "rs",
+  "ignore": [
+    "*.test.js"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

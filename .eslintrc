@@ -1,0 +1,12 @@
+{
+  "extends": "airbnb",
+  "settings": {
+    "react": {
+      "version": "16.10.2"
+    }
+  },
+  "rules": {
+    "comma-dangle": "off",
+    "linebreak-style": 0
+  }
+}
