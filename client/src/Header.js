@@ -41,8 +41,7 @@ function Header(props) {
   )
 
   return (
-    <div className="header">
-      {/* CONTENT HERE */}
+    <>
       <Button
         className="codegen"
         icon={Codegen}
@@ -53,7 +52,7 @@ function Header(props) {
         Generate
       </Button>
       {isAuthenticated() ? <Logout /> : <Login />}
-    </div>
+    </>
   )
 }
 
