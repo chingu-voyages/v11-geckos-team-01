@@ -32,7 +32,6 @@ function Header(props) {
       className="login"
       icon={LoginIcon}
       outlined
-      dense
     >
       Login with Github
     </Button>
@@ -45,9 +44,8 @@ function Header(props) {
         icon={Codegen}
         onClick={props.callback}
         raised
-        dense
       >
-        Generate
+        <div>Generate</div>
       </Button>
       {props.user ? <Logout /> : <Login />}
     </>

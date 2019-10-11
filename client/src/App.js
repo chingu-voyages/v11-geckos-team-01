@@ -175,7 +175,7 @@ class App extends React.Component {
           >
             <DrawerHeader>
               <DrawerTitle tag="h1">
-                <strong>JSON_GENERATOR {'{ }'}</strong>
+                <strong><span style={{ color: '#6200ee' }}>JSON</span> GENERATOR</strong>
               </DrawerTitle>
             </DrawerHeader>
 
