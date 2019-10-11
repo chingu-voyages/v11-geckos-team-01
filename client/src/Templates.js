@@ -18,6 +18,12 @@ import List, {
 } from '@material/react-list'
 
 function Templates (props) {
+
+  const focusTemplate = (template, history) => {
+    history.push(`/${template._id}`)
+    props.callback(template)
+  }
+
   return (
     <Route render={({ history }) => (
       <>
@@ -27,10 +33,10 @@ function Templates (props) {
             {
               props.templates && 
               props.templates.length ?
-              props.templates.map(({ _id, name, createdOn }) => (
-                <ListItem key={_id} onClick={() => history.push(`/${_id}`)}>
+              props.templates.map((template) => (
+                <ListItem key={template._id} onClick={() => focusTemplate(template, history)}>
                   <ListItemGraphic graphic={<MaterialIcon icon='folder'/>} />
-                  <ListItemText primaryText={name || moment(createdOn).format('MMMM Do YYYY, h:mm:ss a')} />
+                  <ListItemText primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')} />
                 </ListItem>
                 )
               )
@@ -50,6 +56,7 @@ function Templates (props) {
 
 Templates.propTypes = {
   selectedIndex: PropTypes.number,
+  callback: PropTypes.func,
   //
   // An array of objects
   //

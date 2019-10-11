@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter as Router, useParams } from 'react-router-dom'
 
 import uuid from 'uuid/v4'
 import Mustache from 'mustache'
@@ -20,6 +20,8 @@ import TopAppBar, {
   TopAppBarRow
 } from '@material/react-top-app-bar'
 
+import { Snackbar } from '@material/react-snackbar'
+
 import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
@@ -29,6 +31,7 @@ import template from './config/template'
 
 import '@material/react-list/dist/list.css'
 import '@material/react-drawer/dist/drawer.css'
+import '@material/react-snackbar/dist/snackbar.css'
 import '@material/react-top-app-bar/dist/top-app-bar.css'
 import '@material/react-material-icon/dist/material-icon.css'
 
@@ -50,9 +53,11 @@ class App extends React.Component {
       initialValue,
       templates: [],
       selectedIndex: 0,
+      templateId: '',
       open: false
     }
   }
+
   async componentDidMount() {
     template.get('/').then(({ data }) => {
       console.log(data);
@@ -70,6 +75,7 @@ class App extends React.Component {
       this.setState({ user: response.data.user })
     }
   }
+
   repeatNode(callback, node, mode) {
     const args = callback.match(/\d+/g)
     const parsed = args.map((str) => parseInt(str, 10))
@@ -85,6 +91,7 @@ class App extends React.Component {
     }
     return mode === 'json' ? JSON.stringify(result) : result
   }
+
   findNodes = () => {
     const queue = [...this.state.value]
     const schema = []
@@ -123,6 +130,7 @@ class App extends React.Component {
     BFS(callback, this.state.value)
     return schema
   }
+
   generateJSON = () => {
     let result = ''
     let lastNode = {}
@@ -148,19 +156,45 @@ class App extends React.Component {
     }
     this.setState({ result })
   }
+
+  generateAndSave = () => {
+    this.generateJSON()
+    console.log(this.state.value)
+    template.put(`/${this.state.templateId}`, { template: JSON.stringify(this.state.value) }).then((data) => {
+      console.log(data)
+      this.setState({ success: true })
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
   onChange = (nextState) => {
     this.setState({ value: nextState })
+  }
+
+  onSelect = (nextState) => {
+    console.log(nextState)
+    this.setState({
+      templateId: nextState._id,
+      value: nextState.template
+    })
   }
 
   onDrawerClose = () => {
     this.setState({ open: false })
     this.focusFirstFocusableItem()
   }
-  
+
   toggleDrawer = () => {
     this.setState((prevState) => { return { open: !prevState.open } })
   }
 
+  getSnackbarInfo = (snackbar) => {
+    if (!snackbar) return
+    console.log(snackbar.getTimeoutMs())
+    console.log(snackbar.isOpen())
+    console.log(snackbar.getCloseOnEscape())
+  }
   render() {
     const { open, selectedIndex, templates, user, result } = this.state;
 
@@ -182,6 +216,7 @@ class App extends React.Component {
             <DrawerContent>
               <Templates
                 selctedIndex={selectedIndex}
+                callback={this.onSelect}
                 templates={templates}
               />
             </DrawerContent>
@@ -199,7 +234,7 @@ class App extends React.Component {
                   <Header
                     className="topbar-actions"
                     user={user}
-                    callback={this.generateJSON}
+                    callback={this.generateAndSave}
                   />
                 </TopAppBarSection>
               </TopAppBarRow>
@@ -223,6 +258,11 @@ class App extends React.Component {
             </TopAppBarFixedAdjust>
           </DrawerAppContent>
         </div>
+        {/* <Snackbar
+          message="Problem Updating Template"
+          actionText="dismiss"
+          ref={this.getSnackbarInfo}
+        /> */}
       </Router>
     )
   }
