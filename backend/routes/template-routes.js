@@ -9,7 +9,8 @@ const templateRoutes = express.Router();
  * Get All Templates
  */
 templateRoutes.get('/', requireLogin(), async (req, res) => {
-  const templates = await Template.find({ userId: req.user.id });
+  // eslint-disable-next-line no-underscore-dangle
+  const templates = await Template.find({ userId: req.user._id });
 
   res.send(templates);
 });

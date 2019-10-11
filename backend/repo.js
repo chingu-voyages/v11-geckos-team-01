@@ -8,8 +8,8 @@ const uuid = require('uuid/v4');
 
 const { MongoClient } = require('mongodb');
 
-const dbpassword = process.env.MONGODB_PASSWORD;
-const dbuser = process.env.MONGODB_USER;
+const dbpassword = process.env.MONGO_PASSWORD;
+const dbuser = process.env.MONGO_USER;
 const uri = `mongodb://${dbuser}:${dbpassword}@ds153824.mlab.com:53824/json-generator`;
 console.log('USER: ', dbuser);
 
