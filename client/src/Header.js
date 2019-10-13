@@ -17,7 +17,6 @@ const DeleteIcon = <MaterialIcon icon="delete" />
 function Header(props) {
   const Logout = () => (
     <Button
-      dense
       outlined
       href="/auth/logout"
       className="logout"

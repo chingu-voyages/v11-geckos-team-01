@@ -41,9 +41,10 @@ templateRoutes.put('/:id', requireLogin(), async (req, res, next) => {
 
   try {
     const saved = await Template.updateOne({ _id: templateId }, updateTemplate);
+    const template = await Template.findOne({ _id: templateId });
 
     if (saved) {
-      return res.sendStatus(200);
+      return res.status(200).json(template);
     }
 
     return res.sendStatus(500);

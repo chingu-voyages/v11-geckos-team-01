@@ -38,6 +38,7 @@ import '@material/react-material-icon/dist/material-icon.css'
 import './App.css'
 
 import initialValue from './initial.js'
+import { formatJSONfromString } from './Utils'
 
 const repeats = (node = {}) => {
   const regex = /repeat\((\w|\d|\s|,)+\)/g
@@ -161,23 +162,35 @@ class App extends React.Component {
 
   generateAndSave = () => {
     this.generateJSON()
-    // console.log(this.state.value)
+    
     const url = `/${this.state.templateId}`
     const data = { template: JSON.stringify(this.state.value) }
-    console.log(this.state.value);
+    const { templates, templateId } = this.state
 
-    template.put(url, data).then((data) => {
-      console.log(data)
-      this.setState({ success: true })
+    template.put(url, data).then(({ data }) => {
+      const nextState = templates.map((item) => item._id !== templateId ? item : data)
+      this.setState({
+        success: true,
+        templates: nextState
+      })
     }).catch((error) => {
       console.error(error)
     })
   }
 
   onChange = (nextState) => {
-    console.log(typeof nextState)
-    debugger
     this.setState({ value: nextState })
+  }
+
+  createOne = () => {
+    const { templates } = this.state
+    const payload = { template: formatJSONfromString(initialValue) }
+    template.post('/', payload).then(({ data: { data } }) => {
+      console.log(data)
+      this.setState({ templates: [...templates, data]})
+    }).catch((error) => {
+      console.error(error)
+    })
   }
 
   deleteOne = () => {
@@ -200,7 +213,7 @@ class App extends React.Component {
   onSelect = (nextState) => {
     this.setState({
       templateId: nextState._id,
-      result: '',
+      result: [],
       value: JSON.parse(nextState.template)
     })
   }
@@ -243,6 +256,7 @@ class App extends React.Component {
               <Templates
                 selctedIndex={selectedIndex}
                 callback={this.onSelect}
+                createOne={this.createOne}
                 templates={templates}
               />
             </DrawerContent>

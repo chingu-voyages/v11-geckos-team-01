@@ -35,7 +35,7 @@ function Templates (props) {
     <Route render={({ history }) => (
       <>
         <ListGroup>
-          <ListItem>
+          <ListItem onClick={props.createOne}>
             <ListItemGraphic graphic={CreateIcon}/>
             <ListItemText primaryText="Create New Template" />
           </ListItem>
@@ -70,6 +70,7 @@ function Templates (props) {
 
 Templates.propTypes = {
   selectedIndex: PropTypes.number,
+  createOne: PropTypes.func,
   callback: PropTypes.func,
   //
   // An array of objects
