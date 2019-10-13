@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, useParams } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 import uuid from 'uuid/v4'
 import Mustache from 'mustache'
@@ -48,9 +48,8 @@ class App extends React.Component {
     super(props)
     this.state = {
       user: null,
-      value: '',
-      result: '',
-      initialValue,
+      value: [],
+      result: [],
       templates: [],
       selectedIndex: 0,
       templateId: '',
@@ -59,6 +58,9 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
+    if (localStorage.getItem('drawer')) {
+      this.setState({ open: localStorage.getItem('drawer') === 'true' })
+    }
     template.get('/').then(({ data }) => {
       console.log(data);
       this.setState({ templates: data });
@@ -154,13 +156,17 @@ class App extends React.Component {
         .replace(/("\[)/g, "[")
         .replace(/(\]")/g, "]")
     }
-    this.setState({ result })
+    this.setState({ result: JSON.parse(result) })
   }
 
   generateAndSave = () => {
     this.generateJSON()
-    console.log(this.state.value)
-    template.put(`/${this.state.templateId}`, { template: JSON.stringify(this.state.value) }).then((data) => {
+    // console.log(this.state.value)
+    const url = `/${this.state.templateId}`
+    const data = { template: JSON.stringify(this.state.value) }
+    console.log(this.state.value);
+
+    template.put(url, data).then((data) => {
       console.log(data)
       this.setState({ success: true })
     }).catch((error) => {
@@ -169,14 +175,33 @@ class App extends React.Component {
   }
 
   onChange = (nextState) => {
+    console.log(typeof nextState)
+    debugger
     this.setState({ value: nextState })
   }
 
+  deleteOne = () => {
+    console.log('[DELETE ONE]')
+    const { templates, templateId } = this.state
+    const url = `/${templateId}`
+    template.delete(url).then((data) => {
+      const nextState = templates.filter(({ _id }) => _id !== templateId)
+      console.log(data)
+      this.setState({
+        templateId: '',
+        value: JSON.parse(JSON.stringify(initialValue)),
+        templates: nextState
+      })
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
   onSelect = (nextState) => {
-    console.log(nextState)
     this.setState({
       templateId: nextState._id,
-      value: nextState.template
+      result: '',
+      value: JSON.parse(nextState.template)
     })
   }
 
@@ -186,6 +211,7 @@ class App extends React.Component {
   }
 
   toggleDrawer = () => {
+    localStorage.setItem('drawer', !this.state.open)
     this.setState((prevState) => { return { open: !prevState.open } })
   }
 
@@ -196,7 +222,7 @@ class App extends React.Component {
     console.log(snackbar.getCloseOnEscape())
   }
   render() {
-    const { open, selectedIndex, templates, user, result } = this.state;
+    const { open, selectedIndex, templates, user, result, value, templateId } = this.state;
 
     return (
       <Router>
@@ -234,6 +260,8 @@ class App extends React.Component {
                   <Header
                     className="topbar-actions"
                     user={user}
+                    templateId={templateId}
+                    deleteOne={this.deleteOne}
                     callback={this.generateAndSave}
                   />
                 </TopAppBarSection>
@@ -246,7 +274,8 @@ class App extends React.Component {
                     <Editor
                       onChange={this.onChange}
                       viewPortMargin={Infinity}
-                      defaultValue={initialValue}
+                      newTemplateId={templateId}
+                      defaultValue={value}
                       readOnly={false}
                     />
                   </div>

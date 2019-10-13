@@ -12,6 +12,7 @@
   position: relative;
   overflow-x: hidden;
   height: 7vh !important;
+  min-height: 48px;
   background: #333333;
   font-family: monospace;
   color: white;
