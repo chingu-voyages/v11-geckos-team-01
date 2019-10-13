@@ -68,4 +68,20 @@ templateRoutes.get('/:id', async (req, res, next) => {
   }
 });
 
+templateRoutes.delete('/:id', async (req, res, next) => {
+  const templateId = req.params.id;
+
+  try {
+    const template = await Template.deleteOne({ _id: templateId });
+
+    if (template) {
+      return res.status(200).send('Template Deleted');
+    }
+
+    return res.statusCode(404);
+  } catch (error) {
+    return next(error);
+  }
+});
+
 module.exports = templateRoutes;

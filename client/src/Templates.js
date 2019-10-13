@@ -17,6 +17,13 @@ import List, {
   ListItemText
 } from '@material/react-list'
 
+const CreateIcon = (
+  <MaterialIcon
+    style={{ color: 'green' }}
+    icon="add"
+  />
+)
+
 function Templates (props) {
 
   const focusTemplate = (template, history) => {
@@ -28,6 +35,11 @@ function Templates (props) {
     <Route render={({ history }) => (
       <>
         <ListGroup>
+          <ListItem>
+            <ListItemGraphic graphic={CreateIcon}/>
+            <ListItemText primaryText="Create New Template" />
+          </ListItem>
+          <ListDivider tag="div" />
           <ListGroupSubheader tag='h1'>My Templates</ListGroupSubheader>
           <List singleSelection selectedIndex={props.selectedIndex}>
             {
@@ -36,7 +48,9 @@ function Templates (props) {
               props.templates.map((template) => (
                 <ListItem key={template._id} onClick={() => focusTemplate(template, history)}>
                   <ListItemGraphic graphic={<MaterialIcon icon='folder'/>} />
-                  <ListItemText primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')} />
+                  <ListItemText
+                    primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')}
+                  />
                 </ListItem>
                 )
               )
