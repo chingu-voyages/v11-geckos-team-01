@@ -11,7 +11,7 @@ import '@material/react-material-icon/dist/material-icon.css';
 import './Header.css'
 
 const Codegen = <MaterialIcon icon="cloud_upload" />
-const LoginIcon = <MaterialIcon icon="open_in_new" />
+const OpenInNew = <MaterialIcon icon="open_in_new" />
 const DeleteIcon = <MaterialIcon icon="delete" /> 
 
 function Header(props) {
@@ -19,7 +19,7 @@ function Header(props) {
     <Button
       outlined
       href="/auth/logout"
-      className="logout"
+      className="auth-btn"
     >
       Logout
       </Button>
@@ -28,8 +28,8 @@ function Header(props) {
   const Login = () => (
     <Button
       href="/auth/github"
-      className="login"
-      icon={LoginIcon}
+      className="auth-btn"
+      icon={OpenInNew}
       outlined
     >
       Login with Github
@@ -47,14 +47,26 @@ function Header(props) {
         <div>Generate</div>
       </Button>
       {props.templateId &&
-        <Button
-          icon={DeleteIcon}
-          color="red"
-          onClick={props.deleteOne}
-          outlined
-        >
-          Delete
-        </Button>
+        <>
+          <Button
+            icon={DeleteIcon}
+            color="red"
+            className="header-btn"
+            onClick={props.deleteOne}
+            outlined
+          >
+            Delete
+          </Button>
+          <Button
+            target="_blank"
+            outlined
+            icon={OpenInNew}
+            className="header-btn"
+            href={`/json/${props.templateId}`}
+          >
+            JSON
+          </Button>        
+        </>
       }
       {props.user ? <Logout /> : <Login />}
     </>
