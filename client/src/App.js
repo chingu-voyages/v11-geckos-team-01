@@ -188,8 +188,14 @@ class App extends React.Component {
     const { templates } = this.state
     const payload = { template: formatJSONfromString(initialValue) }
     template.post('/', payload).then(({ data }) => {
-      console.log(data)
-      this.setState({ templates: [...templates, data]})
+      const nextState = [...templates, data]
+      this.setState({
+        templateId: data._id,
+        templates: nextState,
+        selectedIndex: nextState.length - 1,
+        value: JSON.parse(data.template),
+        result: []
+      })
     }).catch((error) => {
       console.error(error)
     })

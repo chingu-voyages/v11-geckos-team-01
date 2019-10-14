@@ -68,7 +68,7 @@ class Editor extends React.Component {
     //
     const doc = this.codeMirror.getDoc();
     const str = formatJSONfromString(doc.getValue());
-    console.log(str)
+
     const val = JSON.parse(str);
     this.props.onChange(val);
 
