@@ -62,7 +62,7 @@ function Header(props) {
             outlined
             icon={OpenInNew}
             className="header-btn"
-            href={`/json/${props.templateId}`}
+            href={`/api/json/${props.templateId}`}
           >
             JSON
           </Button>        

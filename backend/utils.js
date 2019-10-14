@@ -29,16 +29,18 @@ const findNodes = (value) => {
   const queue = [...value];
   const schema = [];
   const explored = [];
-  const callback = ({ node, cb, name = '_root' }) => {
+  // eslint-disable-next-line no-shadow
+  const callback = ({ node, callback, name = '_root' }) => {
     const nextState = cloneDeep(node);
     Object.keys(node).forEach((prop) => {
       if (Array.isArray(node[prop])) {
         nextState[prop] = `{{&${prop}}}`;
       }
     });
-    return schema.push({ node: nextState, cb, name });
+    return schema.push({ node: nextState, callback, name });
   };
-  function BFS(cb, rootNode) {
+  // eslint-disable-next-line no-shadow
+  function BFS(callback, rootNode) {
     let node = [rootNode];
     let name;
     while (queue.length > 0) {
@@ -47,7 +49,7 @@ const findNodes = (value) => {
       let prop;
       if (node && repeats(node)) {
         prop = repeats(node);
-        cb({ node: node[prop], callback: repeats(node)[0], name });
+        callback({ node: node[prop], callback: repeats(node)[0], name });
         explored.push(prop);
         queue.push(node[prop]);
       } else {
@@ -65,10 +67,10 @@ const findNodes = (value) => {
   return schema;
 };
 
-const generateJSON = () => {
+const generateJSON = (template) => {
   let result = '';
   let lastNode = {};
-  const nodes = findNodes();
+  const nodes = findNodes(template);
   const callbacks = nodes.reduce((acc, { node, callback, name }) => ({
     ...acc, [name]: () => repeatNode(callback, node, 'json')
   }), {});
@@ -79,9 +81,10 @@ const generateJSON = () => {
   while (nodes.length) {
     lastNode = nodes.shift();
     const { callback, node, name } = lastNode;
+    // eslint-disable-next-line no-shadow
     let template = '';
     template = name === '_root'
-      ? JSON.stringify(this.repeatNode(callback, node))
+      ? JSON.stringify(repeatNode(callback, node))
       : result;
     const string = Mustache.render(template, config);
     result = string

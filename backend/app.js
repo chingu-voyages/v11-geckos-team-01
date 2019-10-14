@@ -9,6 +9,7 @@ const helmet = require('helmet');
 
 const authRoutes = require('./routes/auth-routes.js');
 const templateRoutes = require('./routes/template-routes');
+const jsonRoutes = require('./routes/json-routes');
 
 require('./services/passport.js');
 
@@ -41,5 +42,7 @@ app.use('/auth', authRoutes);
 app.use('/api/templates', templateRoutes);
 
 app.get('/', express.static(path.resolve(__dirname, '../client/build')));
+
+app.use('/api/json', jsonRoutes);
 
 module.exports = app;

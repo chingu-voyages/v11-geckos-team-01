@@ -2,7 +2,6 @@ const express = require('express');
 
 const requireLogin = require('../middleware/require-login.js');
 const Template = require('../models/template.js');
-const generateJSON = require('../utils');
 
 const templateRoutes = express.Router();
 
@@ -14,20 +13,6 @@ templateRoutes.get('/', requireLogin(), async (req, res) => {
   const templates = await Template.find({ userId: req.user._id });
 
   res.send(templates);
-});
-
-templateRoutes.get('/json/:id', async (req, res) => {
-  const templateId = req.params.id;
-  const templates = await Template.find({ _id: templateId });
-
-  try {
-    console.log(templates);
-    res.status(200).json(templates);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-  res.sendStatus(400);
 });
 
 templateRoutes.post('/', requireLogin(), async (req, res, next) => {
