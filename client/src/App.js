@@ -185,7 +185,7 @@ class App extends React.Component {
   createOne = () => {
     const { templates } = this.state
     const payload = { template: formatJSONfromString(initialValue) }
-    template.post('/', payload).then(({ data: { data } }) => {
+    template.post('/', payload).then(({ data }) => {
       console.log(data)
       this.setState({ templates: [...templates, data]})
     }).catch((error) => {
