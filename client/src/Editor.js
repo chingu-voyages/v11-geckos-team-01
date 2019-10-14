@@ -79,7 +79,7 @@ class Editor extends React.Component {
         // const val = JSON.parse(str);
         this.props.onChange(str);
       } catch (error) {
-        console.error(error);
+        return false;
       }
     });
   }

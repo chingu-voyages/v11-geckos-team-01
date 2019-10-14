@@ -25,6 +25,7 @@ const CreateIcon = (
 )
 
 function Templates (props) {
+  // const [selectedIndex, setSelectedIndex] = useState(0)
 
   const focusTemplate = (template, history) => {
     history.push(`/${template._id}`)
@@ -40,14 +41,18 @@ function Templates (props) {
             <ListItemText primaryText="Create New Template" />
           </ListItem>
           <ListDivider tag="div" />
-          <ListGroupSubheader tag='h1'>My Templates</ListGroupSubheader>
-          <List singleSelection selectedIndex={props.selectedIndex}>
+          <ListGroupSubheader tag="h1">My Templates</ListGroupSubheader>
+          <List
+            singleSelection
+            selectedIndex={props.selectedIndex}
+            handleSelect={(i) => props.setSelectedIndex(i)}
+          >
             {
               props.templates && 
               props.templates.length ?
               props.templates.map((template) => (
                 <ListItem key={template._id} onClick={() => focusTemplate(template, history)}>
-                  <ListItemGraphic graphic={<MaterialIcon icon='folder'/>} />
+                  <ListItemGraphic graphic={<MaterialIcon icon="folder"/>} />
                   <ListItemText
                     primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')}
                   />
@@ -70,6 +75,7 @@ function Templates (props) {
 
 Templates.propTypes = {
   selectedIndex: PropTypes.number,
+  setSelectedIndex: PropTypes.func,
   createOne: PropTypes.func,
   callback: PropTypes.func,
   //

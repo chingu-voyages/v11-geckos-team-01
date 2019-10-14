@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter as Router, withRouter } from 'react-router-dom'
 
 import uuid from 'uuid/v4'
 import Mustache from 'mustache'
@@ -20,7 +20,7 @@ import TopAppBar, {
   TopAppBarRow
 } from '@material/react-top-app-bar'
 
-import { Snackbar } from '@material/react-snackbar'
+// import { Snackbar } from '@material/react-snackbar'
 
 import Editor from './Editor'
 import Preview from './Preview'
@@ -167,6 +167,8 @@ class App extends React.Component {
     const data = { template: JSON.stringify(this.state.value) }
     const { templates, templateId } = this.state
 
+    if (!this.state.templateId) return
+
     template.put(url, data).then(({ data }) => {
       const nextState = templates.map((item) => item._id !== templateId ? item : data)
       this.setState({
@@ -194,17 +196,26 @@ class App extends React.Component {
   }
 
   deleteOne = () => {
-    console.log('[DELETE ONE]')
     const { templates, templateId } = this.state
     const url = `/${templateId}`
     template.delete(url).then((data) => {
       const nextState = templates.filter(({ _id }) => _id !== templateId)
-      console.log(data)
-      this.setState({
-        templateId: '',
-        value: JSON.parse(JSON.stringify(initialValue)),
-        templates: nextState
-      })
+
+      if (nextState.length) {
+        const selectedIndex = nextState.length - 1
+        const last = nextState[selectedIndex]
+        this.setState({
+          templateId: last._id,
+          value: JSON.parse(last.template),
+          templates: nextState,
+          selectedIndex })
+      } else {
+        this.setState({
+          templateId: '',
+          templates: [],
+          value: []
+        })
+      }
     }).catch((error) => {
       console.error(error)
     })
@@ -234,6 +245,11 @@ class App extends React.Component {
     console.log(snackbar.isOpen())
     console.log(snackbar.getCloseOnEscape())
   }
+
+  setSelectedIndex = (selectedIndex) => {
+    this.setState({ selectedIndex })
+  }
+
   render() {
     const { open, selectedIndex, templates, user, result, value, templateId } = this.state;
 
@@ -254,7 +270,8 @@ class App extends React.Component {
 
             <DrawerContent>
               <Templates
-                selctedIndex={selectedIndex}
+                setSelectedIndex={this.setSelectedIndex}
+                selectedIndex={selectedIndex}
                 callback={this.onSelect}
                 createOne={this.createOne}
                 templates={templates}
