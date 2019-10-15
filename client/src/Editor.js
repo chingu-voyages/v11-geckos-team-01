@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
 require('codemirror/theme/neat.css');
@@ -12,7 +14,8 @@ import './Editor.css';
 import { formatJSONfromString } from './Utils';
 
 // eslint-disable-next-line import/first
-import PropTypes from 'prop-types';
+import initialValue from './initial.js';
+// JSON.parse(formatJSONfromString(initialValue))
 
 // eslint-disable-next-line import/first
 import React from 'react';
@@ -30,25 +33,31 @@ class Editor extends React.Component {
       lineNumbers: true
     };
     this.state = {
-      // defaultValue: `\nfunction Foo () {\n  return "Bar"\n}\n`
-      defaultValue: null
-    };
+      lastTemplateId: null,
+      defaultValue: initialValue
+    }
   }
   getCodeMirrorInstance() {
     return require('codemirror');
   }
   componentWillReceiveProps(props) {
-    if (props.readOnly) {
+    const { lastTemplateId } = this.state
+    if (props.newTemplateId !== lastTemplateId) {
+      this.setState({ lastTemplateId: props.newTemplateId })
       try {
         this.codeMirror
           .getDoc()
-          .setValue(JSON.stringify(JSON.parse(props.defaultValue), null, 2));
+          .setValue(JSON.stringify(props.defaultValue, null, 2));
       } catch (error) {
+        console.error(error)
         return false;
       }
     }
   }
   componentDidMount() {
+    this.setState({
+      defaultValue: this.props.defaultValue
+    })
     const codeMirrorInstance = this.getCodeMirrorInstance();
     this.codeMirror = codeMirrorInstance.fromTextArea(
       this.textAreaNode,
@@ -57,53 +66,41 @@ class Editor extends React.Component {
     //
     // Saves the editor content whenever a change happens
     //
-    this.setState({ defaultValue: this.props.defaultValue });
-    if (!this.props.readOnly) {
-      // initialize
-      const doc = this.codeMirror.getDoc();
-      const str = formatJSONfromString(doc.getValue());
-      const val = JSON.parse(str);
-      this.props.onChange(val);
+    const doc = this.codeMirror.getDoc();
+    const str = formatJSONfromString(doc.getValue());
 
-      this.codeMirror.on('change', (doc, change) => {
-        try {
-          const str = formatJSONfromString(doc.getValue());
-          const val = JSON.parse(str);
-          this.props.onChange(val);
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    }
-    // this.codeMirror.setSize('100%', '100%')
+    const val = JSON.parse(str);
+    this.props.onChange(val);
+
+    this.codeMirror.on('change', (doc, change) => {
+      try {
+        // const str = formatJSONfromString(doc.getValue());
+        const str = JSON.parse(doc.getValue())
+        // const val = JSON.parse(str);
+        this.props.onChange(str);
+      } catch (error) {
+        return false;
+      }
+    });
   }
   render() {
     return (
       <textarea
         ref={(ref) => (this.textAreaNode = ref)}
         autoFocus={true}
-        readOnly={this.props.readOnly}
-        defaultValue={this.props.defaultValue}
+        defaultValue={this.state.defaultValue}
       ></textarea>
     );
   }
 }
 
 Editor.propTypes = {
-  autoFocus: PropTypes.bool,
-  className: PropTypes.any,
   codeMirrorInstance: PropTypes.func,
-  // intialValue: PropTypes.string,
-  name: PropTypes.string,
   onChange: PropTypes.func,
-  onCursorActivity: PropTypes.func,
-  onFocusChange: PropTypes.func,
-  onScroll: PropTypes.func,
   options: PropTypes.object,
-  path: PropTypes.string,
-  value: PropTypes.string,
   readOnly: PropTypes.bool,
-  defaultValue: PropTypes.string,
+  defaultValue: PropTypes.array,
+  newTemplateId: PropTypes.string,
   preserveScrollPosition: PropTypes.bool
 };
 

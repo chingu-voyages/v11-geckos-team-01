@@ -17,20 +17,45 @@ import List, {
   ListItemText
 } from '@material/react-list'
 
+const CreateIcon = (
+  <MaterialIcon
+    style={{ color: 'green' }}
+    icon="add"
+  />
+)
+
 function Templates (props) {
+  // const [selectedIndex, setSelectedIndex] = useState(0)
+
+  const focusTemplate = (template, history) => {
+    history.push(`/${template._id}`)
+    props.callback(template)
+  }
+
   return (
     <Route render={({ history }) => (
       <>
         <ListGroup>
-          <ListGroupSubheader tag='h1'>My Templates</ListGroupSubheader>
-          <List singleSelection selectedIndex={props.selectedIndex}>
+          <ListItem onClick={props.createOne}>
+            <ListItemGraphic graphic={CreateIcon}/>
+            <ListItemText primaryText="Create New Template" />
+          </ListItem>
+          <ListDivider tag="div" />
+          <ListGroupSubheader tag="h1">My Templates</ListGroupSubheader>
+          <List
+            singleSelection
+            selectedIndex={props.selectedIndex}
+            handleSelect={(i) => props.setSelectedIndex(i)}
+          >
             {
               props.templates && 
               props.templates.length ?
-              props.templates.map(({ _id, name, createdOn }) => (
-                <ListItem key={_id} onClick={() => history.push(`/${_id}`)}>
-                  <ListItemGraphic graphic={<MaterialIcon icon='folder'/>} />
-                  <ListItemText primaryText={name || moment(createdOn).format('MMMM Do YYYY, h:mm:ss a')} />
+              props.templates.map((template) => (
+                <ListItem key={template._id} onClick={() => focusTemplate(template, history)}>
+                  <ListItemGraphic graphic={<MaterialIcon icon="folder"/>} />
+                  <ListItemText
+                    primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')}
+                  />
                 </ListItem>
                 )
               )
@@ -50,6 +75,9 @@ function Templates (props) {
 
 Templates.propTypes = {
   selectedIndex: PropTypes.number,
+  setSelectedIndex: PropTypes.func,
+  createOne: PropTypes.func,
+  callback: PropTypes.func,
   //
   // An array of objects
   //

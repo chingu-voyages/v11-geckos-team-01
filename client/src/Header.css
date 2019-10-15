@@ -8,10 +8,12 @@
   min-height: 50px;
   z-index: 99;
   padding: 0 10px 0 10px;
+  border-bottom: 2px solid black;
   /* box-shadow: 0px -15px 20px 20px rgb(32, 32, 32); */
   position: relative;
   overflow-x: hidden;
   height: 7vh !important;
+  min-height: 48px;
   background: #333333;
   font-family: monospace;
   color: white;

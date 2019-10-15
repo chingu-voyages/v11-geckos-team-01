@@ -41,9 +41,10 @@ templateRoutes.put('/:id', requireLogin(), async (req, res, next) => {
 
   try {
     const saved = await Template.updateOne({ _id: templateId }, updateTemplate);
+    const template = await Template.findOne({ _id: templateId });
 
     if (saved) {
-      return res.sendStatus(200);
+      return res.status(200).json(template);
     }
 
     return res.sendStatus(500);
@@ -60,6 +61,22 @@ templateRoutes.get('/:id', async (req, res, next) => {
 
     if (template) {
       return res.status(200).json(template);
+    }
+
+    return res.statusCode(404);
+  } catch (error) {
+    return next(error);
+  }
+});
+
+templateRoutes.delete('/:id', async (req, res, next) => {
+  const templateId = req.params.id;
+
+  try {
+    const template = await Template.deleteOne({ _id: templateId });
+
+    if (template) {
+      return res.status(200).send('Template Deleted');
     }
 
     return res.statusCode(404);

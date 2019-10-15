@@ -20,6 +20,8 @@ import TopAppBar, {
   TopAppBarRow
 } from '@material/react-top-app-bar'
 
+// import { Snackbar } from '@material/react-snackbar'
+
 import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
@@ -29,12 +31,14 @@ import template from './config/template'
 
 import '@material/react-list/dist/list.css'
 import '@material/react-drawer/dist/drawer.css'
+import '@material/react-snackbar/dist/snackbar.css'
 import '@material/react-top-app-bar/dist/top-app-bar.css'
 import '@material/react-material-icon/dist/material-icon.css'
 
 import './App.css'
 
 import initialValue from './initial.js'
+import { formatJSONfromString } from './Utils'
 
 const repeats = (node = {}) => {
   const regex = /repeat\((\w|\d|\s|,)+\)/g
@@ -45,15 +49,19 @@ class App extends React.Component {
     super(props)
     this.state = {
       user: null,
-      value: '',
-      result: '',
-      initialValue,
+      value: [],
+      result: [],
       templates: [],
       selectedIndex: 0,
+      templateId: '',
       open: false
     }
   }
+
   async componentDidMount() {
+    if (localStorage.getItem('drawer')) {
+      this.setState({ open: localStorage.getItem('drawer') === 'true' })
+    }
     template.get('/').then(({ data }) => {
       console.log(data);
       this.setState({ templates: data });
@@ -70,6 +78,7 @@ class App extends React.Component {
       this.setState({ user: response.data.user })
     }
   }
+
   repeatNode(callback, node, mode) {
     const args = callback.match(/\d+/g)
     const parsed = args.map((str) => parseInt(str, 10))
@@ -85,6 +94,7 @@ class App extends React.Component {
     }
     return mode === 'json' ? JSON.stringify(result) : result
   }
+
   findNodes = () => {
     const queue = [...this.state.value]
     const schema = []
@@ -123,6 +133,7 @@ class App extends React.Component {
     BFS(callback, this.state.value)
     return schema
   }
+
   generateJSON = () => {
     let result = ''
     let lastNode = {}
@@ -146,23 +157,108 @@ class App extends React.Component {
         .replace(/("\[)/g, "[")
         .replace(/(\]")/g, "]")
     }
-    this.setState({ result })
+    this.setState({ result: JSON.parse(result) })
   }
+
+  generateAndSave = () => {
+    this.generateJSON()
+    
+    const url = `/${this.state.templateId}`
+    const data = { template: JSON.stringify(this.state.value) }
+    const { templates, templateId } = this.state
+
+    if (!this.state.templateId) return
+
+    template.put(url, data).then(({ data }) => {
+      const nextState = templates.map((item) => item._id !== templateId ? item : data)
+      this.setState({
+        success: true,
+        templates: nextState
+      })
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
   onChange = (nextState) => {
     this.setState({ value: nextState })
+  }
+
+  createOne = () => {
+    const { templates } = this.state
+    const payload = { template: formatJSONfromString(initialValue) }
+    template.post('/', payload).then(({ data }) => {
+      const nextState = [...templates, data]
+      this.setState({
+        templateId: data._id,
+        templates: nextState,
+        selectedIndex: nextState.length - 1,
+        value: JSON.parse(data.template),
+        result: []
+      })
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
+  deleteOne = () => {
+    const { templates, templateId } = this.state
+    const url = `/${templateId}`
+    template.delete(url).then((data) => {
+      const nextState = templates.filter(({ _id }) => _id !== templateId)
+
+      if (nextState.length) {
+        const selectedIndex = nextState.length - 1
+        const last = nextState[selectedIndex]
+        this.setState({
+          templateId: last._id,
+          value: JSON.parse(last.template),
+          result: [],
+          templates: nextState,
+          selectedIndex })
+      } else {
+        this.setState({
+          templateId: '',
+          templates: [],
+          value: []
+        })
+      }
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
+  onSelect = (nextState) => {
+    this.setState({
+      templateId: nextState._id,
+      result: [],
+      value: JSON.parse(nextState.template)
+    })
   }
 
   onDrawerClose = () => {
     this.setState({ open: false })
     this.focusFirstFocusableItem()
   }
-  
+
   toggleDrawer = () => {
+    localStorage.setItem('drawer', !this.state.open)
     this.setState((prevState) => { return { open: !prevState.open } })
   }
 
+  getSnackbarInfo = (snackbar) => {
+    if (!snackbar) return
+    console.log(snackbar.getTimeoutMs())
+    console.log(snackbar.isOpen())
+    console.log(snackbar.getCloseOnEscape())
+  }
+
+  setSelectedIndex = (selectedIndex) => {
+    this.setState({ selectedIndex })
+  }
+
   render() {
-    const { open, selectedIndex, templates, user, result } = this.state;
+    const { open, selectedIndex, templates, user, result, value, templateId } = this.state;
 
     return (
       <Router>
@@ -181,7 +277,10 @@ class App extends React.Component {
 
             <DrawerContent>
               <Templates
-                selctedIndex={selectedIndex}
+                setSelectedIndex={this.setSelectedIndex}
+                selectedIndex={selectedIndex}
+                callback={this.onSelect}
+                createOne={this.createOne}
                 templates={templates}
               />
             </DrawerContent>
@@ -199,7 +298,9 @@ class App extends React.Component {
                   <Header
                     className="topbar-actions"
                     user={user}
-                    callback={this.generateJSON}
+                    templateId={templateId}
+                    deleteOne={this.deleteOne}
+                    callback={this.generateAndSave}
                   />
                 </TopAppBarSection>
               </TopAppBarRow>
@@ -211,7 +312,8 @@ class App extends React.Component {
                     <Editor
                       onChange={this.onChange}
                       viewPortMargin={Infinity}
-                      defaultValue={initialValue}
+                      newTemplateId={templateId}
+                      defaultValue={value}
                       readOnly={false}
                     />
                   </div>
@@ -223,6 +325,11 @@ class App extends React.Component {
             </TopAppBarFixedAdjust>
           </DrawerAppContent>
         </div>
+        {/* <Snackbar
+          message="Problem Updating Template"
+          actionText="dismiss"
+          ref={this.getSnackbarInfo}
+        /> */}
       </Router>
     )
   }

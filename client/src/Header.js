@@ -10,14 +10,13 @@ import '@material/react-material-icon/dist/material-icon.css';
 
 import './Header.css'
 
-const Codegen = <MaterialIcon icon="cached" />
-
+const Codegen = <MaterialIcon icon="cloud_upload" />
 const LoginIcon = <MaterialIcon icon="open_in_new" />
+const DeleteIcon = <MaterialIcon icon="delete" /> 
 
 function Header(props) {
   const Logout = () => (
     <Button
-      dense
       outlined
       href="/auth/logout"
       className="logout"
@@ -47,12 +46,24 @@ function Header(props) {
       >
         <div>Generate</div>
       </Button>
+      {props.templateId &&
+        <Button
+          icon={DeleteIcon}
+          color="red"
+          onClick={props.deleteOne}
+          outlined
+        >
+          Delete
+        </Button>
+      }
       {props.user ? <Logout /> : <Login />}
     </>
   )
 }
 
 Header.propTypes = {
-  callback: PropTypes.func
+  callback: PropTypes.func,
+  deleteOne: PropTypes.func,
+  templateId: PropTypes.string
 }
 export default Header
