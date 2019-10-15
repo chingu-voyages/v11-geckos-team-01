@@ -213,6 +213,7 @@ class App extends React.Component {
         this.setState({
           templateId: last._id,
           value: JSON.parse(last.template),
+          result: [],
           templates: nextState,
           selectedIndex })
       } else {
