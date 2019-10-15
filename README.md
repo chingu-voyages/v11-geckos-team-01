@@ -7,7 +7,7 @@ JSON Template Generator | Voyage-11 | https://chingu.io/ | Twitter: https://twit
 
 ### Authors
 * [Nicholas Vorraso](https://github.com/nickeyvee)
-* [Pablo](https://github.com/pablowbk)
+* [Joseph Morse](https://github.com/jnmorse)
 
 ...
 
