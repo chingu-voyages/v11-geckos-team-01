@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, withRouter } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 import uuid from 'uuid/v4'
 import Mustache from 'mustache'

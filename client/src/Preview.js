@@ -2,7 +2,7 @@
 import React from 'react'
 
 import PropTypes from 'prop-types'
-import isEqual from 'lodash/isEqual'
+// import isEqual from 'lodash/isEqual'
 
 require('codemirror/lib/codemirror.css')
 require('codemirror/theme/material.css')

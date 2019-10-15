@@ -11,7 +11,7 @@
     "dev:client": "npm --prefix client run start",
     "dev:server": "npm --prefix backend run dev",
     "eject": "react-scripts eject",
-    "heroku-postbuild": "react-scripts build",
+    "heroku-postbuild": "cd ./client && npm run build",
     "start": "npm --prefix backend run start",
     "test": "run-s test:*",
     "test:client": "cross-env CI=true npm --silent --prefix client run test",
