@@ -3,17 +3,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import List, {
-  ListItem,
   ListGroup,
-  ListItemGraphic,
-  ListGroupSubheader,
   ListDivider,
-  ListItemText
 } from '@material/react-list'
-
-import Card, {
-  CardPrimaryContent
-} from "@material/react-card"
 
 import '@material/react-card/dist/card.css'
 

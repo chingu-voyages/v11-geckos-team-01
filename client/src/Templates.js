@@ -35,40 +35,49 @@ function Templates (props) {
   return (
     <Route render={({ history }) => (
       <>
-        <ListGroup>
-          <ListItem onClick={props.createOne}>
-            <ListItemGraphic graphic={CreateIcon}/>
-            <ListItemText primaryText="Create New Template" />
-          </ListItem>
-          <ListDivider tag="div" />
-          <ListGroupSubheader tag="h1">My Templates</ListGroupSubheader>
-          <List
-            singleSelection
-            selectedIndex={props.selectedIndex}
-            handleSelect={(i) => props.setSelectedIndex(i)}
-          >
-            {
-              props.templates && 
-              props.templates.length ?
-              props.templates.map((template) => (
-                <ListItem key={template._id} onClick={() => focusTemplate(template, history)}>
-                  <ListItemGraphic graphic={<MaterialIcon icon="folder"/>} />
-                  <ListItemText
-                    primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')}
-                  />
-                </ListItem>
+        {props.user
+        ? <ListGroup>
+            <ListItem onClick={props.createOne}>
+              <ListItemGraphic graphic={CreateIcon}/>
+              <ListItemText primaryText="Create New Template" />
+            </ListItem>
+            <ListDivider tag="div" />
+            <ListGroupSubheader tag="h1">My Templates</ListGroupSubheader>
+            <List
+              singleSelection
+              selectedIndex={props.selectedIndex}
+              handleSelect={(i) => props.setSelectedIndex(i)}
+            >
+              {
+                props.templates && 
+                props.templates.length ?
+                props.templates.map((template) => (
+                  <ListItem key={template._id} onClick={() => focusTemplate(template, history)}>
+                    <ListItemGraphic graphic={<MaterialIcon icon="folder"/>} />
+                    <ListItemText
+                      primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')}
+                    />
+                  </ListItem>
+                  )
                 )
-              )
-              : (
-                <ListItem disabled>
-                  <ListItemText primaryText="No Data Available" />
-                </ListItem>
-              )
-            }
-          </List>
-          <ListDivider tag="div" />
-        </ListGroup>
-      </>      
+                : (
+                  <ListItem disabled>
+                    <ListItemText primaryText="No Data Available" />
+                  </ListItem>
+                )
+              }
+            </List>
+            <ListDivider tag="div" />
+          </ListGroup>
+        : <ListGroup>
+            <ListGroupSubheader
+              style={{ paddingBottom: 15 }}
+              tag="h1"
+            >Please Login</ListGroupSubheader>
+            <ListDivider tag="div" />
+          </ListGroup>
+        }
+      </>    
     )} />
   )
 }

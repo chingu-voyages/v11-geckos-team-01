@@ -6,7 +6,6 @@ import Mustache from 'mustache'
 
 import cloneDeep from 'lodash/cloneDeep'
 
-import Button from '@material/react-button'
 import MaterialIcon from '@material/react-material-icon'
 
 import Drawer, {
@@ -26,8 +25,8 @@ import TopAppBar, {
 import {
   ListItem,
   ListGroup,
-  ListItemGraphic,
   ListDivider,
+  ListItemGraphic,
   ListItemText
 } from '@material/react-list'
 
@@ -303,23 +302,29 @@ class App extends React.Component {
             </DrawerHeader>
 
             <DrawerContent>
-              { tab === 'templates'
-              ? <>
+              {tab === 'templates' &&
+                <>
                   <Templates
                     setSelectedIndex={this.setSelectedIndex}
                     selectedIndex={selectedIndex}
                     callback={this.onSelect}
                     createOne={this.createOne}
                     templates={templates}
-                  />
-                  <ListGroup>
-                    <ListItem onClick={() => this.setState({ tab: 'help' })}>
-                      <ListItemGraphic graphic={<MaterialIcon icon="navigate_next"/>}/>
-                      <ListItemText primaryText="View Cheatsheet" />
-                    </ListItem>
-                  </ListGroup>            
+                    user={user}
+                  />            
                 </>
-              : <>
+              }
+              {tab === 'templates' &&
+                <ListGroup>
+                  <ListItem onClick={() => this.setState({ tab: 'help' })}>
+                    <ListItemGraphic graphic={<MaterialIcon icon="navigate_next"/>}/>
+                    <ListItemText primaryText="View Cheatsheet" />
+                  </ListItem>
+                  <ListDivider tag="div" />
+                </ListGroup>
+              }
+              {tab === "help" &&
+                <>
                   <ListGroup>
                     <ListItem onClick={() => this.setState({ tab: 'templates' })}>
                       <ListItemGraphic graphic={<MaterialIcon icon="navigate_before"/>}/>
