@@ -1,5 +1,4 @@
 import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
 
 import uuid from 'uuid/v4'
 import Mustache from 'mustache'
@@ -287,96 +286,94 @@ class App extends React.Component {
     const { open, selectedIndex, templates, user, result, value, templateId, helpers, tab } = this.state;
 
     return (
-      <Router>
-        <div className="drawer-container">
-          <Drawer
-            className="drawer"
-            dismissible
-            open={open}
-            onClose={this.drawerOnClose}
-          >
-            <DrawerHeader>
-              <DrawerTitle tag="h1">
-                <strong><span style={{ color: '#6200ee' }}>JSON</span> GENERATOR</strong>
-              </DrawerTitle>
-            </DrawerHeader>
+      <div className="drawer-container">
+        <Drawer
+          className="drawer"
+          dismissible
+          open={open}
+          onClose={this.drawerOnClose}
+        >
+          <DrawerHeader>
+            <DrawerTitle tag="h1">
+              <strong><span style={{ color: '#6200ee' }}>JSON</span> GENERATOR</strong>
+            </DrawerTitle>
+          </DrawerHeader>
 
-            <DrawerContent>
-              {tab === 'templates' &&
-                <>
-                  <Templates
-                    setSelectedIndex={this.setSelectedIndex}
-                    selectedIndex={selectedIndex}
-                    callback={this.onSelect}
-                    createOne={this.createOne}
-                    templates={templates}
-                    user={user}
-                  />            
-                </>
-              }
-              {tab === 'templates' &&
+          <DrawerContent>
+            {tab === 'templates' &&
+              <>
+                <Templates
+                  setSelectedIndex={this.setSelectedIndex}
+                  selectedIndex={selectedIndex}
+                  callback={this.onSelect}
+                  createOne={this.createOne}
+                  templates={templates}
+                  user={user}
+                />            
+              </>
+            }
+            {tab === 'templates' &&
+              <ListGroup>
+                <ListItem onClick={() => this.setState({ tab: 'help' })}>
+                  <ListItemGraphic graphic={<MaterialIcon icon="navigate_next"/>}/>
+                  <ListItemText primaryText="View Cheatsheet" />
+                </ListItem>
+                <ListDivider tag="div" />
+              </ListGroup>
+            }
+            {tab === "help" &&
+              <>
                 <ListGroup>
-                  <ListItem onClick={() => this.setState({ tab: 'help' })}>
-                    <ListItemGraphic graphic={<MaterialIcon icon="navigate_next"/>}/>
-                    <ListItemText primaryText="View Cheatsheet" />
+                  <ListItem onClick={() => this.setState({ tab: 'templates' })}>
+                    <ListItemGraphic graphic={<MaterialIcon icon="navigate_before"/>}/>
+                    <ListItemText primaryText="Cheatsheet" />
                   </ListItem>
-                  <ListDivider tag="div" />
-                </ListGroup>
-              }
-              {tab === "help" &&
-                <>
-                  <ListGroup>
-                    <ListItem onClick={() => this.setState({ tab: 'templates' })}>
-                      <ListItemGraphic graphic={<MaterialIcon icon="navigate_before"/>}/>
-                      <ListItemText primaryText="Cheatsheet" />
-                    </ListItem>
-                  </ListGroup>                      
-                  <HelpCards items={helpers} />
-                </>
-              }
-            </DrawerContent>
-          </Drawer>
+                </ListGroup>                      
+                <HelpCards items={helpers} />
+              </>
+            }
+          </DrawerContent>
+        </Drawer>
 
-          <DrawerAppContent className="drawer-app-content">
-            <TopAppBar title="Inbox" className="top-app-bar">
-              <TopAppBarRow
-                className={`header ${this.state.open ? 'right-pad' : ''}`}
-              >
-                <TopAppBarSection align="start" role="toolbar">
-                  <TopAppBarIcon navIcon onClick={this.toggleDrawer}>
-                    <i className="material-icons">menu</i>
-                  </TopAppBarIcon>
-                  <Header
-                    className="topbar-actions"
-                    user={user}
-                    templateId={templateId}
-                    deleteOne={this.deleteOne}
-                    callback={this.generateAndSave}
+        <DrawerAppContent className="drawer-app-content">
+          <TopAppBar title="Inbox" className="top-app-bar">
+            <TopAppBarRow
+              className={`header ${this.state.open ? 'right-pad' : ''}`}
+            >
+              <TopAppBarSection align="start" role="toolbar">
+                <TopAppBarIcon navIcon onClick={this.toggleDrawer}>
+                  <i className="material-icons">menu</i>
+                </TopAppBarIcon>
+                <Header
+                  className="topbar-actions"
+                  user={user}
+                  templateId={templateId}
+                  deleteOne={this.deleteOne}
+                  callback={this.generateAndSave}
+                />
+              </TopAppBarSection>
+            </TopAppBarRow>
+          </TopAppBar>
+          <TopAppBarFixedAdjust>
+            <div className="editor-wrapper">
+              <div className="flex-container">
+                <div className="flex-item">
+                  <Editor
+                    onChange={this.onChange}
+                    viewPortMargin={Infinity}
+                    newTemplateId={templateId}
+                    defaultValue={value}
+                    readOnly={false}
                   />
-                </TopAppBarSection>
-              </TopAppBarRow>
-            </TopAppBar>
-            <TopAppBarFixedAdjust>
-              <div className="editor-wrapper">
-                <div className="flex-container">
-                  <div className="flex-item">
-                    <Editor
-                      onChange={this.onChange}
-                      viewPortMargin={Infinity}
-                      newTemplateId={templateId}
-                      defaultValue={value}
-                      readOnly={false}
-                    />
-                  </div>
-                  <div className="flex-item">
-                    <Preview defaultValue={result} />
-                  </div>
+                </div>
+                <div className="flex-item">
+                  <Preview defaultValue={result} />
                 </div>
               </div>
-            </TopAppBarFixedAdjust>
-          </DrawerAppContent>
-        </div>
-      </Router>
+            </div>
+          </TopAppBarFixedAdjust>
+        </DrawerAppContent>
+      </div>
     )
   }
 }
