@@ -1,6 +1,7 @@
 import React from 'react'
 
 import uuid from 'uuid/v4'
+import faker from 'faker'
 import Mustache from 'mustache'
 
 import cloneDeep from 'lodash/cloneDeep'
@@ -168,6 +169,13 @@ class App extends React.Component {
     }), {})
     const config = {
       guid: () => uuid(),
+      amount: () => faker.finance.amount(),
+      firstName: () => faker.name.firstName(),
+      lastName: () => faker.name.lastName(),
+      companyName: () => faker.company.companyName(),
+      sentence: () => faker.lorem.sentence(),
+      paragraph: () => faker.lorem.paragraph(),
+      words: () => faker.lorem.words(),
       ...callbacks
     }
     while (nodes.length) {

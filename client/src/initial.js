@@ -5,24 +5,24 @@ const initial = `[{
       {
         'repeat(3, 5)': {
 	  	  _id: '{{guid}}',
-          name: null,
-          value: 0
+          name: '{{companyName}}',
+          value: '{{amount}}'
         }
       }
     ],
     people: [{
       'repeat(3, 5)': {
-        name: null,
+        firstName: '{{firstName}}',
+        lastName: '{{lastName}}',
 		_id: '{{guid}}',
         facts: [{
           'repeat(3, 5)': {
             _id: '{{guid}}',
-            desc: null
+            desc: '{{words}}'
           }
        }]
       }
-    }],
-    picture: 'http://placehold.it/32x32'
+    }]
   }
 }]`
 export default initial

@@ -1,7 +1,6 @@
 
 const cloneDeep = require('lodash/cloneDeep');
 const Mustache = require('mustache');
-const faker = require('faker');
 const uuid = require('uuid/v4');
 
 const repeats = (node = {}) => {
@@ -77,13 +76,7 @@ const generateJSON = (template) => {
   }), {});
   const config = {
     guid: () => uuid(),
-    amount: () => faker.finance.amount(),
-    firstName: () => faker.name.firstName(),
-    lastName: () => faker.name.lastName(),
-    companyName: () => faker.company.companyName(),
-    sentence: () => faker.lorem.sentence(),
-    paragraph: () => faker.lorem.paragraph(),
-    words: () => faker.lorem.words(),
+    firstName: () => 'tHiS iS a nAmE',
     ...callbacks
   };
   while (nodes.length) {
