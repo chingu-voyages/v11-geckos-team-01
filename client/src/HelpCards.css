@@ -1,0 +1,34 @@
+.helpcard-code {
+  width: 80%;
+}
+
+.help-card {
+  padding: 0 15px 0 15px;
+}
+
+.help-card * {
+  margin: 7px 0 7px 0;
+}
+
+.help-cards-header {
+  padding-bottom: 20px;
+}
+
+.help-card .code {
+  border-radius: 2px;
+  font-weight: 500;
+  padding: 5px;
+}
+
+.help-card .code.code-usage {
+  background: rgb(220, 222, 236);
+  color: #6200ee;
+  font-size: 12px;
+}
+
+.help-card .code.code-returns {
+  font-weight: 700;
+  color: white;
+  background: black;
+  font-size: 15;
+}

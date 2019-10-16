@@ -20,14 +20,13 @@ import TopAppBar, {
   TopAppBarRow
 } from '@material/react-top-app-bar'
 
-// import { Snackbar } from '@material/react-snackbar'
-
 import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
 import Templates from './Templates'
 import auth from './config/auth'
 import template from './config/template'
+import HelpCards from './HelpCards'
 
 import '@material/react-list/dist/list.css'
 import '@material/react-drawer/dist/drawer.css'
@@ -52,6 +51,20 @@ class App extends React.Component {
       value: [],
       result: [],
       templates: [],
+      helpers: [
+        {
+          name: 'repeat',
+          desc: 'Repeats an object a specified amount of times',
+          usage: `{\n  "repeat(min, max)": {\n   "sentence": "repeat this X times."\n  }\n}`,
+          returns: 'Array'
+        },
+        {
+          name: 'guid',
+          desc: 'Random globally unique identifier.',
+          usage: '{{guid}}',
+          returns: 'String'
+        }
+      ],
       selectedIndex: 0,
       templateId: '',
       open: false
@@ -258,7 +271,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { open, selectedIndex, templates, user, result, value, templateId } = this.state;
+    const { open, selectedIndex, templates, user, result, value, templateId, helpers } = this.state;
 
     return (
       <Router>
@@ -283,11 +296,12 @@ class App extends React.Component {
                 createOne={this.createOne}
                 templates={templates}
               />
+              <HelpCards items={helpers} />
             </DrawerContent>
           </Drawer>
 
           <DrawerAppContent className="drawer-app-content">
-            <TopAppBar title="Inbox">
+            <TopAppBar title="Inbox" className="top-app-bar">
               <TopAppBarRow
                 className={`header ${this.state.open ? 'right-pad' : ''}`}
               >
@@ -325,11 +339,6 @@ class App extends React.Component {
             </TopAppBarFixedAdjust>
           </DrawerAppContent>
         </div>
-        {/* <Snackbar
-          message="Problem Updating Template"
-          actionText="dismiss"
-          ref={this.getSnackbarInfo}
-        /> */}
       </Router>
     )
   }
