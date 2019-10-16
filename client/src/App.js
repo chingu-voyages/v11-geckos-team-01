@@ -67,7 +67,7 @@ class App extends React.Component {
       helpers: [
         {
           name: 'repeat',
-          desc: 'Repeats an object a specified amount of times',
+          desc: 'Repeats an object a specified amount of times.',
           usage: `{\n  "repeat(min, max)": {\n   "sentence": "repeat this X times."\n  }\n}`,
           returns: 'Array'
         },
@@ -151,9 +151,12 @@ class App extends React.Component {
     const args = callback.match(/\d+/g)
     const parsed = args.map((str) => parseInt(str, 10))
 
-    const max = parsed[1]
-    const min = parsed[0]
+    let max = parsed[1]
+    let min = parsed[0]
 
+    // prevent crazy-large inputs
+    if (max > 500) max = 500
+  
     let i = Math.floor((Math.random() * ((max + 1) - min)) + min)
 
     const result = []
