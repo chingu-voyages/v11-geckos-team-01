@@ -6,6 +6,9 @@ import Mustache from 'mustache'
 
 import cloneDeep from 'lodash/cloneDeep'
 
+import Button from '@material/react-button'
+import MaterialIcon from '@material/react-material-icon'
+
 import Drawer, {
   DrawerHeader,
   DrawerTitle,
@@ -20,6 +23,14 @@ import TopAppBar, {
   TopAppBarRow
 } from '@material/react-top-app-bar'
 
+import {
+  ListItem,
+  ListGroup,
+  ListItemGraphic,
+  ListDivider,
+  ListItemText
+} from '@material/react-list'
+
 import Editor from './Editor'
 import Preview from './Preview'
 import Header from './Header'
@@ -29,10 +40,12 @@ import template from './config/template'
 import HelpCards from './HelpCards'
 
 import '@material/react-list/dist/list.css'
+import '@material/react-button/dist/button.css'
 import '@material/react-drawer/dist/drawer.css'
 import '@material/react-snackbar/dist/snackbar.css'
 import '@material/react-top-app-bar/dist/top-app-bar.css'
 import '@material/react-material-icon/dist/material-icon.css'
+
 
 import './App.css'
 
@@ -51,6 +64,7 @@ class App extends React.Component {
       value: [],
       result: [],
       templates: [],
+      tab: 'templates',
       helpers: [
         {
           name: 'repeat',
@@ -271,7 +285,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { open, selectedIndex, templates, user, result, value, templateId, helpers } = this.state;
+    const { open, selectedIndex, templates, user, result, value, templateId, helpers, tab } = this.state;
 
     return (
       <Router>
@@ -289,14 +303,32 @@ class App extends React.Component {
             </DrawerHeader>
 
             <DrawerContent>
-              <Templates
-                setSelectedIndex={this.setSelectedIndex}
-                selectedIndex={selectedIndex}
-                callback={this.onSelect}
-                createOne={this.createOne}
-                templates={templates}
-              />
-              <HelpCards items={helpers} />
+              { tab === 'templates'
+              ? <>
+                  <Templates
+                    setSelectedIndex={this.setSelectedIndex}
+                    selectedIndex={selectedIndex}
+                    callback={this.onSelect}
+                    createOne={this.createOne}
+                    templates={templates}
+                  />
+                  <ListGroup>
+                    <ListItem onClick={() => this.setState({ tab: 'help' })}>
+                      <ListItemGraphic graphic={<MaterialIcon icon="navigate_next"/>}/>
+                      <ListItemText primaryText="View Cheatsheet" />
+                    </ListItem>
+                  </ListGroup>            
+                </>
+              : <>
+                  <ListGroup>
+                    <ListItem onClick={() => this.setState({ tab: 'templates' })}>
+                      <ListItemGraphic graphic={<MaterialIcon icon="navigate_before"/>}/>
+                      <ListItemText primaryText="Cheatsheet" />
+                    </ListItem>
+                  </ListGroup>                      
+                  <HelpCards items={helpers} />
+                </>
+              }
             </DrawerContent>
           </Drawer>
 
