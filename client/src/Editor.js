@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { JSHINT } from 'jshint';
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
@@ -7,6 +8,14 @@ require('codemirror/mode/xml/xml.js');
 require('codemirror/mode/javascript/javascript.js');
 require('codemirror/addon/lint/lint');
 require('codemirror/addon/lint/json-lint');
+require('codemirror/addon/lint/javascript-lint');
+
+window.JSHINT = JSHINT;
+
+// eslint-disable-next-line import/first
+import 'codemirror/addon/lint/lint.css';
+// eslint-disable-next-line import/first
+import 'codemirror/addon/lint/lint';
 
 // eslint-disable-next-line import/first
 import './Editor.css';
@@ -27,8 +36,10 @@ class Editor extends React.Component {
     this.codeMirrorInstance = null;
     this.codeMirror = null;
     this.options = {
-      mode: props.mode ? props.mode : 'javascript',
+      mode: 'javascript',
       theme: 'material',
+      gutters: ['CodeMirror-lint-markers'],
+      lint: true,
       viewportMargin: props.viewPortMargin ? props.viewPortMargin : 10,
       lineNumbers: true
     };
