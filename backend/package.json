@@ -17,7 +17,7 @@
   "author": "Joseph Morse <tamed.lionheart@gmail.com> (https://github.com/jnmorse)",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -r esm index.js",
+    "start": "node -r esm index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "dev": "nodemon -r esm index.js",
