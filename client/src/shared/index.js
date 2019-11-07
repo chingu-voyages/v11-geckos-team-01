@@ -1,6 +1,6 @@
-
 const cloneDeep = require('lodash/cloneDeep');
 const Mustache = require('mustache');
+const faker = require('faker');
 const uuid = require('uuid/v4');
 
 const repeats = (node = {}) => {
@@ -67,7 +67,23 @@ const findNodes = (value) => {
   return schema;
 };
 
-const generateJSON = (template) => {
+export function formatJSONfromString (str = '') {
+  return str
+    .replace(/(\r\n|\r|\n|\s)+/g, '')
+    .replace(/"/g, `\\"`)
+    .replace(/([,]|[{])([\d]|[\w])+:/g, (str) => {
+      const word = /\w+/g
+      const prop = str.match(word) ? str.match(word)[0] : ''
+
+      if (str.indexOf('{') !== -1) {
+        return `{"${prop}":`
+      } else {
+        return `,"${prop}":`
+      }
+    })
+    .replace(/'/g, '"')
+}
+export function generator (template) {
   let result = '';
   let lastNode = {};
   const nodes = findNodes(template);
@@ -76,7 +92,13 @@ const generateJSON = (template) => {
   }), {});
   const config = {
     guid: () => uuid(),
-    firstName: () => 'tHiS iS a nAmE',
+    amount: () => faker.finance.amount(),
+    firstName: () => faker.name.firstName(),
+    lastName: () => faker.name.lastName(),
+    companyName: () => faker.company.companyName(),
+    sentence: () => faker.lorem.sentence(),
+    paragraph: () => faker.lorem.paragraph(),
+    words: () => faker.lorem.words(),
     ...callbacks
   };
   while (nodes.length) {
@@ -94,6 +116,4 @@ const generateJSON = (template) => {
   }
   // this.setState({ result: JSON.parse(result) })
   return JSON.parse(result);
-};
-
-module.exports = generateJSON;
+}

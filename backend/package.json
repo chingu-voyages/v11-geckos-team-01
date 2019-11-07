@@ -17,16 +17,17 @@
   "author": "Joseph Morse <tamed.lionheart@gmail.com> (https://github.com/jnmorse)",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon -r esm index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "dev": "nodemon index.js",
+    "dev": "nodemon -r esm index.js",
     "test": "jest"
   },
   "dependencies": {
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "faker": "^4.1.0",

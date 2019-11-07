@@ -23,7 +23,8 @@
     "cross-env": "^6.0.3",
     "faker": "^4.1.0",
     "jshint": "^2.10.2",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "npm": "^6.12.0"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
@@ -37,7 +38,7 @@
     "standard": "^14.1.0"
   },
   "engines": {
-    "node": "10.16.0",
-    "npm": "6.9.0"
+    "node": "12.13.0",
+    "npm": "6.10.2"
   }
 }

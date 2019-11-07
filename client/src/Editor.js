@@ -1,6 +1,21 @@
 import PropTypes from 'prop-types';
 import { JSHINT } from 'jshint';
 
+// eslint-disable-next-line import/first
+import 'codemirror/addon/lint/lint.css';
+// eslint-disable-next-line import/first
+import 'codemirror/addon/lint/lint';
+
+
+import './Editor.css';
+
+
+import initialValue from './initial.js';
+
+import React from 'react';
+
+import { formatJSONfromString } from './shared'
+
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
 require('codemirror/theme/neat.css');
@@ -12,22 +27,6 @@ require('codemirror/addon/lint/javascript-lint');
 
 window.JSHINT = JSHINT;
 
-// eslint-disable-next-line import/first
-import 'codemirror/addon/lint/lint.css';
-// eslint-disable-next-line import/first
-import 'codemirror/addon/lint/lint';
-
-// eslint-disable-next-line import/first
-import './Editor.css';
-// eslint-disable-next-line import/first
-import { formatJSONfromString } from './Utils';
-
-// eslint-disable-next-line import/first
-import initialValue from './initial.js';
-// JSON.parse(formatJSONfromString(initialValue))
-
-// eslint-disable-next-line import/first
-import React from 'react';
 
 class Editor extends React.Component {
   constructor(props) {

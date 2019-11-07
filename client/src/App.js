@@ -49,7 +49,8 @@ import '@material/react-material-icon/dist/material-icon.css'
 import './App.css'
 
 import initialValue from './initial.js'
-import { formatJSONfromString } from './Utils'
+
+import { generator, formatJSONfromString } from './shared'
 
 const repeats = (node = {}) => {
   const regex = /repeat\((\w|\d|\s|,)+\)/g
@@ -239,7 +240,11 @@ class App extends React.Component {
   }
 
   generateAndSave = () => {
-    this.generateJSON()
+    // this.generateJSON()
+    const { value } = this.state
+    debugger
+
+    this.setState({ result: generator(value) })
     
     const url = `/${this.state.templateId}`
     const data = { template: JSON.stringify(this.state.value) }
