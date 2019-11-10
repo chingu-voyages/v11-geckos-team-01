@@ -9,7 +9,12 @@ const repeats = (node = {}) => {
 };
 
 const repeatNode = (callback, node, mode) => {
-  const args = callback.match(/\d+/g);
+  // If no repeat function is passed, return the node
+  if (!callback) {
+    return node
+  }
+
+  const args = (callback || '').match(/\d+/g);
   const parsed = args.map((str) => parseInt(str, 10));
 
   const max = parsed[1];
@@ -24,7 +29,10 @@ const repeatNode = (callback, node, mode) => {
   }
   return mode === 'json' ? JSON.stringify(result) : result;
 };
-
+//
+// This function will find all of the nodes to be
+// repeated in the final result (our JSON response).
+//
 const findNodes = (value) => {
   const queue = [...value];
   const schema = [];
@@ -40,30 +48,49 @@ const findNodes = (value) => {
     return schema.push({ node: nextState, callback, name });
   };
   // eslint-disable-next-line no-shadow
-  function BFS(callback, rootNode) {
+  (function (callback, rootNode) {
     let node = [rootNode];
     let name;
+
     while (queue.length > 0) {
       node = queue.shift();
       name = explored.shift();
+
       let prop;
       if (node && repeats(node)) {
         prop = repeats(node);
+
+        
         callback({ node: node[prop], callback: repeats(node)[0], name });
+
         explored.push(prop);
+
         queue.push(node[prop]);
       } else {
         // eslint-disable-next-line no-loop-func
         Object.keys(node).forEach((prop) => { // eslint-disable-line no-shadow
           if (Array.isArray(node[prop])) {
+
             explored.push(prop);
+
             queue.push(node[prop][0]);
           }
         });
       }
     }
+  }(callback, value));
+  //
+  // Edge case:
+  // If no repeatable items are found,
+  // we'll just pass the root node here.
+  //
+  if (!schema.length) {
+    callback({
+      node: value.length ? value[0] : value, 
+      callback: null,
+      name: '_root'
+    })
   }
-  BFS(callback, value);
   return schema;
 };
 
@@ -86,10 +113,22 @@ export function formatJSONfromString (str = '') {
 export function generator (template) {
   let result = '';
   let lastNode = {};
-  const nodes = findNodes(template);
+
+  let nodes;
+  //
+  // User can pass an Object or
+  // an array as a valid template
+  //
+  if (!Array.isArray(template)) {
+    nodes = findNodes([template]);
+  } else {
+    nodes = findNodes(template);
+  }
+
   const callbacks = nodes.reduce((acc, { node, callback, name }) => ({
     ...acc, [name]: () => repeatNode(callback, node, 'json')
   }), {});
+
   const config = {
     guid: () => uuid(),
     amount: () => faker.finance.amount(),
@@ -101,6 +140,10 @@ export function generator (template) {
     words: () => faker.lorem.words(),
     ...callbacks
   };
+  //
+  // This is where we begin constructing our
+  // JSON result based on our template
+  //
   while (nodes.length) {
     lastNode = nodes.shift();
     const { callback, node, name } = lastNode;
