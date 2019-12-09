@@ -1,5 +1,6 @@
 const cloneDeep = require('lodash/cloneDeep');
 const Mustache = require('mustache');
+const moment = require('moment');
 const faker = require('faker');
 const uuid = require('uuid/v4');
 
@@ -134,6 +135,8 @@ export function generator (template) {
     amount: () => faker.finance.amount(),
     firstName: () => faker.name.firstName(),
     lastName: () => faker.name.lastName(),
+    friendlyDate: () => moment().format('MMMM Do YYYY'),
+    timestamp: () => moment().format(),
     companyName: () => faker.company.companyName(),
     sentence: () => faker.lorem.sentence(),
     paragraph: () => faker.lorem.paragraph(),
