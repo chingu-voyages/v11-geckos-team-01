@@ -18,12 +18,14 @@
     "test:backend": "npm --silent --prefix backend run test"
   },
   "dependencies": {
+    "@material-ui/core": "^4.9.5",
     "@material/react-card": "^0.15.0",
     "axios": "^0.19.0",
     "cross-env": "^6.0.3",
     "faker": "^4.1.0",
     "jshint": "^2.10.2",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "nodemon": "^2.0.2"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",

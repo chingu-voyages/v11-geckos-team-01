@@ -1,7 +1,7 @@
 
 import React from 'react'
 
-import PropTypes from 'prop-types'
+import PropTypes, { oneOfType } from 'prop-types'
 // import isEqual from 'lodash/isEqual'
 
 require('codemirror/lib/codemirror.css')
@@ -39,6 +39,8 @@ class Preview extends React.Component {
     return require('codemirror')
   }
   componentWillReceiveProps(props) {
+    console.log(props.defaultValue)
+
     try {
       this.codeMirror
         .getDoc()
@@ -82,7 +84,10 @@ Preview.propTypes = {
   path: PropTypes.string,
   value: PropTypes.string,
   readOnly: PropTypes.bool,
-  defaultValue: PropTypes.array,
+  defaultValue: oneOfType([
+    PropTypes.object,
+    PropTypes.array
+  ]),
   preserveScrollPosition: PropTypes.bool
 }
 export default Preview

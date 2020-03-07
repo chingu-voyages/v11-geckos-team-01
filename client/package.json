@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.9.5",
     "@material/react-button": "^0.15.0",
     "@material/react-drawer": "^0.15.0",
     "@material/react-list": "^0.15.0",
@@ -11,11 +12,16 @@
     "@material/react-top-app-bar": "^0.15.0",
     "codemirror": "^5.49.0",
     "http-proxy-middleware": "^0.20.0",
+    "json-schema-faker": "^0.5.0-rc23",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "lodash.times": "^4.3.2",
     "mustache": "^3.1.0",
     "prop-types": "^15.7.2",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0",
+    "to-json-schema": "^0.2.3",
     "uuid": "^3.3.3"
   },
   "scripts": {
