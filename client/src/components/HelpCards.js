@@ -16,8 +16,11 @@ function HelpCards(props) {
     <ListGroup>
       <ListDivider tag="div" />
       <List>
-        {props.items.map(({ name, usage, desc, returns }) => (
-          <div className="help-card">
+        {props.items.map(({ name, usage, desc, returns }, index) => (
+          <div
+            className="help-card"
+            key={`card-${index}`}
+          >
             <div className="help-name">
               <h2>{name}</h2>
             </div>
@@ -31,9 +34,9 @@ function HelpCards(props) {
             <pre
               className="code code-returns"
             >{returns}</pre>
-          </div>       
-        ))}         
-      </List>       
+          </div>
+        ))}
+      </List>
     </ListGroup>
   )
 }

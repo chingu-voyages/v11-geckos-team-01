@@ -47,16 +47,17 @@ class Editor extends React.Component {
   }
   componentWillReceiveProps(props) {
     const { lastTemplateId } = this.state
+
     if (props.newTemplateId !== lastTemplateId) {
       this.setState({ lastTemplateId: props.newTemplateId })
-      try {
-        this.codeMirror
-          .getDoc()
-          .setValue(JSON.stringify(props.defaultValue, null, 2));
-      } catch (error) {
-        console.error(error)
-        return false;
-      }
+      // try {
+      //   this.codeMirror
+      //     .getDoc()
+      //     .setValue(JSON.stringify(props.defaultValue, null, 2));
+      // } catch (error) {
+      //   console.error(error)
+      //   return false;
+      // }
     }
   }
   componentDidMount() {

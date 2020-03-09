@@ -6,14 +6,23 @@ import moment from 'moment'
 
 import MaterialIcon from '@material/react-material-icon'
 
-import List, {
-  ListItem,
-  ListGroup,
-  ListItemGraphic,
-  ListGroupSubheader,
-  ListDivider,
-  ListItemText
-} from '@material/react-list'
+import { makeStyles } from '@material-ui/core/styles';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+}));
 
 const CreateIcon = (
   <MaterialIcon
@@ -23,55 +32,66 @@ const CreateIcon = (
 )
 
 function Templates (props) {
-  // const [selectedIndex, setSelectedIndex] = useState(0)
-
-  const focusTemplate = (template) => {
-    props.callback(template)
+  const focusSchema = (schema) => {
+    if (schema._id !== props.schemaId) {
+      props.callback(schema)
+    }
   }
 
   return (
     <>
       {props.user
-      ? <ListGroup>
-          <ListItem onClick={props.createOne}>
-            <ListItemGraphic graphic={CreateIcon}/>
-            <ListItemText primaryText="Create New Template" />
-          </ListItem>
-          <ListDivider tag="div" />
-          <ListGroupSubheader tag="h1">My Templates</ListGroupSubheader>
-          <List
-            singleSelection
-            selectedIndex={props.selectedIndex}
-            handleSelect={(i) => props.setSelectedIndex(i)}
-          >
+      ? <>
+          <List>
+            <ListItem
+              button
+              onClick={props.createOne}
+            >
+              <ListItemIcon>
+                {CreateIcon}
+              </ListItemIcon>
+              <ListItemText primary="Create New Template" />
+            </ListItem>
+          </List>
+
+          <List component="nav">
             {
-              props.templates && 
-              props.templates.length ?
-              props.templates.map((template) => (
-                <ListItem key={template._id} onClick={() => focusTemplate(template)}>
-                  <ListItemGraphic graphic={<MaterialIcon icon="folder"/>} />
+              props.jsonSchemas &&
+              props.jsonSchemas.length ?
+              props.jsonSchemas.map((template) => (
+                <ListItem
+                  button
+                  selected={props.schemaId === template._id}
+                  key={template._id} onClick={() => focusSchema(template)}
+                >
+                  <ListItemIcon>
+                    <MaterialIcon icon="folder"/>
+                  </ListItemIcon>
                   <ListItemText
-                    primaryText={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')}
+                    primary={template.name || moment(template.createdOn).format('MMMM Do YYYY, h:mm:ss a')}
                   />
                 </ListItem>
                 )
               )
               : (
                 <ListItem disabled>
-                  <ListItemText primaryText="No Data Available" />
+                  <ListItemText primary="No Data Available" />
                 </ListItem>
               )
             }
           </List>
-          <ListDivider tag="div" />
-        </ListGroup>
-      : <ListGroup>
-          <ListGroupSubheader
+          <Divider />
+        </>
+
+      : <List>
+          <ListSubheader
             style={{ paddingBottom: 15 }}
             tag="h1"
-          >Please Login</ListGroupSubheader>
-          <ListDivider tag="div" />
-        </ListGroup>
+          >
+            Please Login
+          </ListSubheader>
+          <Divider />
+        </List>
       }
     </>
   )
@@ -80,14 +100,15 @@ function Templates (props) {
 Templates.propTypes = {
   selectedIndex: PropTypes.number,
   setSelectedIndex: PropTypes.func,
+  schemaId: PropTypes.string,
   createOne: PropTypes.func,
   callback: PropTypes.func,
   //
   // An array of objects
   //
-  // "templates" prop should be sourced from the the users collection.
+  // "jsonSchemas" prop should be sourced from the the users collection.
   //
-  templates: PropTypes.arrayOf(
+  jsonSchemas: PropTypes.arrayOf(
     PropTypes.shape({
       _id: PropTypes.string,
       name: PropTypes.name,

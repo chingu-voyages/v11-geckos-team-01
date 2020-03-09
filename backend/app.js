@@ -10,6 +10,7 @@ const helmet = require('helmet');
 const authRoutes = require('./routes/auth-routes.js');
 const templateRoutes = require('./routes/template-routes');
 const jsonRoutes = require('./routes/json-routes');
+const jsonSchemaRoutes = require('./routes/json-schema-routes')
 
 require('./services/passport.js');
 
@@ -40,6 +41,7 @@ app.use(passport.session());
 
 app.use('/auth', authRoutes);
 app.use('/api/templates', templateRoutes);
+app.use('/api/json-schemas', jsonSchemaRoutes);
 
 app.use('/', express.static(path.join(__dirname, '../client/build')));
 

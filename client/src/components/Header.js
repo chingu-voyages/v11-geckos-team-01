@@ -9,16 +9,68 @@ import '@material/react-material-icon/dist/material-icon.css';
 
 import './Header.css'
 
-import { TextField, Button } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { TextField, Button, ButtonGroup, AppBar, Toolbar, IconButton, Grid } from '@material-ui/core';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { purple } from '@material-ui/core/colors';
 
-const Codegen = <MaterialIcon icon="cloud_upload" />
+import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
+
+import MenuIcon from '@material-ui/icons/Menu';
+
 const OpenInNew = <MaterialIcon icon="open_in_new" />
 const DeleteIcon = <MaterialIcon icon="delete" />
 
 const useStyles = makeStyles(theme => ({
+  appBar: {
+    backgroundColor: theme.palette.common.white
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+  },
+  quantity: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  },
+  quantityIcon: {
+    width: theme.spacing(7),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 7),
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: 120,
+      '&:focus': {
+        width: 200,
+      },
+    },
+  },
   root: {
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
@@ -27,10 +79,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const GenerateButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(purple[800]),
+    backgroundColor: purple[800],
+    '&:hover': {
+      backgroundColor: purple[900],
+    },
+  },
+}))(Button);
+
 function Header(props) {
+  const classes = useStyles
+
   const Logout = () => (
     <Button
-      variant="outlined"
       href="/auth/logout"
       className="auth-btn"
     >
@@ -40,68 +103,106 @@ function Header(props) {
 
   const Login = () => (
     <Button
+      variant="outlined"
       href="/auth/github"
       className="auth-btn"
-      icon={OpenInNew}
-      variant="outlined"
     >
+      {OpenInNew}
       Login with Github
     </Button>
   )
 
   return (
-    <Grid container spacing={1}>
-      <Grid item xs={12}>
-        <Grid container spacing={1} justify="space-between">
-          <div>
-            <Button
-              color="primary"
-              onClick={props.generateData}
-              variant="contained"
+    <AppBar
+      position="static"
+      color="transparent"
+    >
+      <Toolbar>
+        <Grid
+          container
+          alignItems="center"
+          justify="space-between"
+          spacing={1}
+        >
+          <Grid item xs={8}>
+            <Grid
+              container
+              alignItems="center"
+              spacing={1}
             >
-              {Codegen}
-              Generate
-            </Button>
-            <TextField
-              onChange={props.setDataQuantity}
-              style={{ margin: '0 8px 0 8px' }}
-              variant="outlined"
-              size="small"
-            />
-          </div>
-          {props.templateId &&
-            <>
-              <Button
-                icon={DeleteIcon}
-                color="red"
-                className="header-btn"
-                onClick={props.deleteOne}
-                variant="contained"
+              <IconButton
+                edge="start"
+                className={classes.menuButton}
+                color="inherit"
+                onClick={props.toggleDrawer}
+                aria-label="open drawer"
               >
-                Delete
-              </Button>
-              <Button
-                target="_blank"
-                icon={OpenInNew}
-                className="header-btn"
-                variant="contained"
-                href={`/api/json/${props.templateId}`}
-              >
-                JSON
-              </Button>
-            </>
-          }
-          {props.user ? <Logout /> : <Login />}
+                <MenuIcon />
+              </IconButton>
+
+              <Grid item>
+                <GenerateButton
+                  onClick={props.generateData}
+                  variant="contained"
+                >
+                  Generate
+                </GenerateButton>
+              </Grid>
+
+              <Grid item>
+                <TextField
+                  placeholder="Repeats"
+                  onChange={props.setDataQuantity}
+                  id="standard-number"
+                  label="Number"
+                  type="number"
+                  size="small"
+                  variant="outlined"
+                  inputProps={{ 'aria-label': 'quantity' }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item>
+            <ButtonGroup
+              variant="text"
+              color="primary"
+              aria-label="text primary button group"
+            >
+              {props.schemaId &&
+                <Button
+                  className="header-btn"
+                  onClick={props.deleteOne}
+                >
+                  {DeleteIcon}
+                  Delete
+                </Button>
+              }
+              {props.schemaId &&
+                <Button
+                  target="_blank"
+                  className="header-btn"
+                  href={`/api/json/${props.schemaId}`}
+                >
+                  {OpenInNew}
+                  JSON
+                </Button>
+              }
+              {props.user ? <Logout /> : <Login />}
+            </ButtonGroup>
+          </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </Toolbar>
+    </AppBar>
   )
 }
 
 Header.propTypes = {
+  toggleDrawer: PropTypes.func,
   callback: PropTypes.func,
   deleteOne: PropTypes.func,
-  templateId: PropTypes.string,
+  schemaId: PropTypes.string,
   onTextInput: PropTypes.func
 }
 export default Header

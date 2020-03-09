@@ -51,88 +51,17 @@ class App extends React.Component {
     this.state = {
       user: null,
       value: [],
-      result: [],
-      templates: [],
-      tab: 'templates',
+      tab: 'jsonSchemas',
       helpers,
       initial,
-      selectedIndex: 0,
-      templateId: '',
       open: false
     }
   }
 
-  async componentDidMount() {
+  componentDidMount () {
     if (localStorage.getItem('drawer')) {
       this.setState({ open: localStorage.getItem('drawer') === 'true' })
     }
-    template.get('/').then(({ data }) => {
-      this.setState({ templates: data });
-    });
-    const response = await auth.get('/current_user', {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (response.status === 200 && response.data.user) {
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-      this.setState({ user: response.data.user })
-    }
-  }
-
-  onChange = (nextState) => {
-    this.setState({ value: nextState })
-  }
-
-  createOne = () => {
-    const { templates } = this.props
-
-    // const payload = { template: formatJSONfromString(initial) }
-    const payload = { template: null }
-
-    template.post('/', payload).then(({ data }) => {
-      const nextState = [...templates, data]
-      this.setState({
-        templateId: data._id,
-        templates: nextState,
-        selectedIndex: nextState.length - 1,
-        value: JSON.parse(data.template),
-        result: []
-      })
-    }).catch((error) => {
-      console.error(error)
-    })
-  }
-
-  deleteOne = () => {
-    const { templates, templateId } = this.props
-
-    const url = `/${templateId}`
-
-    template.delete(url).then((data) => {
-      const nextState = templates.filter(({ _id }) => _id !== templateId)
-
-      if (nextState.length) {
-        const selectedIndex = nextState.length - 1
-        const last = nextState[selectedIndex]
-        this.setState({
-          templateId: last._id,
-          value: JSON.parse(last.template),
-          result: [],
-          templates: nextState,
-          selectedIndex })
-      } else {
-        this.setState({
-          templateId: '',
-          templates: [],
-          value: []
-        })
-      }
-    }).catch((error) => {
-      console.error(error)
-    })
   }
 
   onDrawerClose = () => {
@@ -152,20 +81,10 @@ class App extends React.Component {
     console.log(snackbar.getCloseOnEscape())
   }
 
-  setSelectedIndex = (selectedIndex) => {
-    this.setState({ selectedIndex })
-  }
-
-  onSelect = (nextState) => {
-    this.setState({
-      templateId: nextState._id,
-      result: [],
-      value: JSON.parse(nextState.template)
-    })
-  }
-
   render() {
-    const { open, selectedIndex, templates, user, result, value, templateId, helpers, tab } = this.state;
+    const { jsonSchemas, user, schemaId } = this.props
+
+    const { open, helpers, tab } = this.state;
 
     return (
       <div className="drawer-container">
@@ -182,19 +101,18 @@ class App extends React.Component {
           </DrawerHeader>
 
           <DrawerContent>
-            {tab === 'templates' &&
+            {tab === 'jsonSchemas' &&
               <>
                 <Templates
-                  setSelectedIndex={this.setSelectedIndex}
-                  selectedIndex={selectedIndex}
                   callback={this.props.onSelect}
                   createOne={this.props.createOne}
-                  templates={templates}
+                  schemaId={this.props.schemaId}
+                  jsonSchemas={jsonSchemas}
                   user={user}
                 />
               </>
             }
-            {tab === 'templates' &&
+            {tab === 'jsonSchemas' &&
               <ListGroup>
                 <ListItem onClick={() => this.setState({ tab: 'help' })}>
                   <ListItemGraphic graphic={<MaterialIcon icon="navigate_next"/>}/>
@@ -206,7 +124,7 @@ class App extends React.Component {
             {tab === "help" &&
               <>
                 <ListGroup>
-                  <ListItem onClick={() => this.setState({ tab: 'templates' })}>
+                  <ListItem onClick={() => this.setState({ tab: 'jsonSchemas' })}>
                     <ListItemGraphic graphic={<MaterialIcon icon="navigate_before"/>}/>
                     <ListItemText primaryText="Cheatsheet" />
                   </ListItem>
@@ -218,44 +136,32 @@ class App extends React.Component {
         </Drawer>
 
         <DrawerAppContent className="drawer-app-content">
-          <TopAppBar title="Inbox" className="top-app-bar">
-            <TopAppBarRow
-              className={`header ${this.state.open ? 'right-pad' : ''}`}
-            >
-              <TopAppBarSection align="start" role="toolbar">
-                <TopAppBarIcon navIcon onClick={this.toggleDrawer}>
-                  <i className="material-icons">menu</i>
-                </TopAppBarIcon>
-                <Header
-                  className="topbar-actions"
-                  user={user}
-                  templateId={templateId}
-                  deleteOne={this.deleteOne}
-                  generateData={this.props.generateData}
-                  setDataQuantity={this.props.setDataQuantity}
+          <Header
+            className={`topbar-actions header ${this.state.open ? 'right-pad' : ''}`}
+            user={this.props.user}
+            toggleDrawer={this.toggleDrawer}
+            schemaId={this.props.schemaId}
+            deleteOne={this.props.deleteOne}
+            generateData={this.props.generateData}
+            setDataQuantity={this.props.setDataQuantity}
+          />
+          <div className="editor-wrapper">
+            <div className="flex-container">
+              <div className="flex-item">
+                <Editor
+                  onChange={this.props.generateSchema}
+                  viewPortMargin={Infinity}
+                  newTemplateId={schemaId}
+                  readOnly={false}
                 />
-              </TopAppBarSection>
-            </TopAppBarRow>
-          </TopAppBar>
-          <TopAppBarFixedAdjust>
-            <div className="editor-wrapper">
-              <div className="flex-container">
-                <div className="flex-item">
-                  <Editor
-                    onChange={this.props.generateSchema}
-                    viewPortMargin={Infinity}
-                    newTemplateId={templateId}
-                    readOnly={false}
-                  />
-                </div>
-                <div className="flex-item">
-                  <Preview
-                    defaultValue={this.props.items}
-                  />
-                </div>
+              </div>
+              <div className="flex-item">
+                <Preview
+                  defaultValue={this.props.items}
+                />
               </div>
             </div>
-          </TopAppBarFixedAdjust>
+          </div>
         </DrawerAppContent>
       </div>
     )

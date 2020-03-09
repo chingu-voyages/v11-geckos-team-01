@@ -13,7 +13,6 @@ const dbuser = process.env.MONGO_USER;
 const uri = `mongodb://${dbuser}:${dbpassword}@ds153824.mlab.com:53824/json-generator`;
 console.log('USER: ', dbuser);
 
-
 const userSchema = new Schema({
   userId: String,
   templateIds: Array
@@ -115,7 +114,7 @@ const mlabService = {
       connect('json').then((collection) => collection.insertOne(data))
     ]).then(() => data).catch((error) => {
       console.log(error);
-      return error;
+      return error;{}
     });
   }
 };

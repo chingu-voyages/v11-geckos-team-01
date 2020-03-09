@@ -39,8 +39,7 @@ class Preview extends React.Component {
     return require('codemirror')
   }
   componentWillReceiveProps(props) {
-    console.log(props.defaultValue)
-
+    // console.log(props.defaultValue)
     try {
       this.codeMirror
         .getDoc()
