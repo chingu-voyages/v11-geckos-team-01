@@ -1,5 +1,9 @@
 const httpProxyMiddleware = require('http-proxy-middleware');
 
+// THIS FILE IS REGISTERED AUTOMATICALLY CREATE-REACT-APP
+
+// https://create-react-app.dev/docs/proxying-api-requests-in-development/
+
 module.exports = (app) => {
   app.use(
     '/api',

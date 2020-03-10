@@ -7,6 +7,10 @@
   /* flex-direction: column; */
 }
 
+.header {
+  background: white;
+}
+
 .right-pad {
   padding-right: 325px;
 }
@@ -35,6 +39,10 @@
 .topbar-header {
   background: #333333;
   overflow-x: hidden;
+}
+
+.material-icons {
+  color: black !important;
 }
 
 .editor {

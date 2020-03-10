@@ -1,20 +1,16 @@
 import PropTypes from 'prop-types';
-import { JSHINT } from 'jshint';
+// import { JSHINT } from 'jshint';
 
 // eslint-disable-next-line import/first
 import 'codemirror/addon/lint/lint.css';
 // eslint-disable-next-line import/first
 import 'codemirror/addon/lint/lint';
 
+import initial from '../initial.json'
 
 import './Editor.css';
 
-
-import initialValue from './initial.js';
-
 import React from 'react';
-
-import { formatJSONfromString } from './shared'
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
@@ -23,10 +19,9 @@ require('codemirror/mode/xml/xml.js');
 require('codemirror/mode/javascript/javascript.js');
 require('codemirror/addon/lint/lint');
 require('codemirror/addon/lint/json-lint');
-require('codemirror/addon/lint/javascript-lint');
+// require('codemirror/addon/lint/javascript-lint');
 
-window.JSHINT = JSHINT;
-
+// window.JSHINT = JSHINT;
 
 class Editor extends React.Component {
   constructor(props) {
@@ -44,7 +39,7 @@ class Editor extends React.Component {
     };
     this.state = {
       lastTemplateId: null,
-      defaultValue: initialValue
+      defaultValue: JSON.stringify(initial, null, 2)
     }
   }
   getCodeMirrorInstance() {
@@ -52,16 +47,17 @@ class Editor extends React.Component {
   }
   componentWillReceiveProps(props) {
     const { lastTemplateId } = this.state
+
     if (props.newTemplateId !== lastTemplateId) {
       this.setState({ lastTemplateId: props.newTemplateId })
-      try {
-        this.codeMirror
-          .getDoc()
-          .setValue(JSON.stringify(props.defaultValue, null, 2));
-      } catch (error) {
-        console.error(error)
-        return false;
-      }
+      // try {
+      //   this.codeMirror
+      //     .getDoc()
+      //     .setValue(JSON.stringify(props.defaultValue, null, 2));
+      // } catch (error) {
+      //   console.error(error)
+      //   return false;
+      // }
     }
   }
   componentDidMount() {
@@ -77,7 +73,8 @@ class Editor extends React.Component {
     // Saves the editor content whenever a change happens
     //
     const doc = this.codeMirror.getDoc();
-    const str = formatJSONfromString(doc.getValue());
+    // const str = formatJSONfromString(doc.getValue());
+    const str = doc.getValue();
 
     const val = JSON.parse(str);
     this.props.onChange(val);
@@ -109,8 +106,8 @@ Editor.propTypes = {
   onChange: PropTypes.func,
   options: PropTypes.object,
   readOnly: PropTypes.bool,
-  defaultValue: PropTypes.array,
   newTemplateId: PropTypes.string,
+  defaultValue: PropTypes.object,
   preserveScrollPosition: PropTypes.bool
 };
 

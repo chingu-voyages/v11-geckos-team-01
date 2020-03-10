@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     displayName: { type: String, require: true },
     username: { type: String, require: true }
   },
-  templateIds: Array
+  templateIds: Array,
+  schemaIds: Array
 });
 
 module.exports = mongoose.model('user', userSchema);
