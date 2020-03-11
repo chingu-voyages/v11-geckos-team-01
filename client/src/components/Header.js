@@ -1,5 +1,7 @@
 import React from 'react'
 
+import debounce from 'lodash.debounce'
+
 import PropTypes from 'prop-types'
 
 import MaterialIcon from '@material/react-material-icon'
@@ -112,6 +114,11 @@ function Header(props) {
     </Button>
   )
 
+  const deleteOne = debounce(props.deleteOne, 1000, {
+    leading: true,
+    trailing: false
+  })
+
   return (
     <AppBar
       position="static"
@@ -173,7 +180,7 @@ function Header(props) {
               {props.schemaId &&
                 <Button
                   className="header-btn"
-                  onClick={props.deleteOne}
+                  onClick={deleteOne}
                 >
                   {DeleteIcon}
                   Delete

@@ -1,18 +1,14 @@
 import React, { userState } from 'react';
 import { render } from 'react-dom';
 
-import set from 'lodash.set'
-import get from 'lodash.get'
-import flow from 'lodash.flow'
-import times from 'lodash.times'
-
-import inferSchema from 'to-json-schema';
-import jsf from 'json-schema-faker';
+import get from 'lodash.get';
 
 import auth from '../config/auth'
 import template from '../config/template'
 
-jsf.extend('faker', () => require('faker'));
+import initial from '../initial.json'
+
+import { generateItems, inferSchema } from '../shared'
 
 export default function Provider(Presenter) {
   return class extends React.Component {
@@ -20,6 +16,7 @@ export default function Provider(Presenter) {
       super(props);
       this.state = {
         user: null,
+        jsonRaw: JSON.stringify(initial, null, 2),
         jsonSchema: null,
         selectedIndex: 0,
         jsonSchemas: [],
@@ -59,6 +56,35 @@ export default function Provider(Presenter) {
       }
     }
 
+    generateData = async () => {
+      if (!this.state.schemaId) return
+
+      const { jsonSchemas, schemaId, jsonSchema, jsonRaw, quantity, items } = this.state
+
+      const url = `/${this.state.schemaId}`
+
+      const body = {
+        jsonRaw: JSON.stringify(jsonRaw),
+        jsonSchema: JSON.stringify(jsonSchema),
+        quantity
+      }
+
+      try {
+        const { data } = await template.put(url, body)
+
+        const nextState = jsonSchemas.map((item) => item._id !== schemaId ? item : data)
+
+        this.setState({
+          success: true,
+          quantity,
+          jsonSchemas: nextState,
+          items: generateItems(quantity, jsonSchema)
+        })
+      } finally {
+        console.log('[REQUEST COMPLETE]')
+      }
+    }
+
     createOne = async () => {
       try {
         const { quantity, jsonSchema, jsonRaw, jsonSchemas } = this.state
@@ -73,15 +99,15 @@ export default function Provider(Presenter) {
 
         console.log(quantity)
 
-        const items = this.generateItems(quantity, jsonSchema)
+        const items = generateItems(quantity, jsonSchema)
 
         this.setState({
           items,
           schemaId: data._id,
-          jsonRaw,
           quantity,
           jsonSchema,
           jsonSchemas: nextState,
+          jsonRaw: JSON.stringify(jsonRaw),
           selectedIndex: nextState.length - 1
         })
       } catch (e) {
@@ -107,7 +133,7 @@ export default function Provider(Presenter) {
           this.setState({
             schemaId: _id,
             quantity,
-            items: this.generateItems(quantity, parsed),
+            items: generateItems(quantity, parsed),
             jsonSchemas: nextState,
           })
         } else {
@@ -133,77 +159,17 @@ export default function Provider(Presenter) {
         schemaId: _id,
         quantity,
         jsonRaw: this.jsonPrettify(jsonRaw),
-        items: this.generateItems(quantity, parsed)
+        items: generateItems(quantity, parsed)
       })
     }
 
-    generateSchema = (v) =>  {
-      const re = /\{\{((?!\}\})(.|\n))*\}\}/g
-
-      const options = {
-        objects: {
-          postProcessFnc: (schema, obj, defaultFnc) => {
-
-            Object.keys(obj).forEach((key) => {
-              const a = get(obj, key)
-              const b = typeof a === 'string' ? a.match(re) : null
-
-              if (b && b[0] && b[0]) {
-                const c = b[0].slice(2, -2)
-
-                set(schema, ['properties', key, 'faker'], c)
-              }
-              // Pass template variable in here ^^^^^^^^^^^^
-              // console.log(schema.properties[key])
-            })
-
-            return ({
-              ...defaultFnc(schema, obj),
-              required: Object.getOwnPropertyNames(obj)
-            })
-          }
-        }
-      };
-
+    generateSchema = (v) => {
       try {
-        const jsonSchema = inferSchema(v, options)
+        const jsonSchema = inferSchema(v)
 
         this.setState({ jsonSchema, jsonRaw: v })
       } catch (e) {
         console.log(e)
-      }
-    }
-
-    generateItems = (quantity, jsonSchema) => {
-      return times(quantity, () => jsf.generate(jsonSchema))
-    }
-
-    generateData = async () => {
-      if (!this.state.schemaId) return
-
-      const { jsonSchemas, schemaId, jsonSchema, jsonRaw, quantity, items } = this.state
-
-      const url = `/${this.state.schemaId}`
-
-      const body = {
-        jsonRaw: JSON.stringify(jsonRaw),
-        jsonSchema: JSON.stringify(jsonSchema),
-        quantity
-      }
-
-      try {
-        const { data } = await template.put(url, body)
-
-        const nextState = jsonSchemas.map((item) => item._id !== schemaId ? item : data)
-
-        this.setState({
-          success: true,
-          quantity,
-          jsonSchemas: nextState,
-          items: this.generateItems(quantity, jsonSchema)
-        })
-      } finally {
-        console.log('[REQUEST COMPLETE]')
       }
     }
 

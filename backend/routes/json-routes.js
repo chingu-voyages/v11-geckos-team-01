@@ -1,19 +1,21 @@
 
-import { generator } from '../../client/src/shared';
+import { generateItems } from '../../client/src/shared';
 
 const express = require('express');
 
-const Template = require('../models/template.js');
+const JsonSchema = require('../models/jsonSchema.js');
 
 const jsonRoutes = express.Router();
 
-
 jsonRoutes.get('/:id', async (req, res) => {
   const templateId = req.params.id;
-  const { _doc } = await Template.findOne({ _id: templateId });
+
+  const { _doc } = await JsonSchema.findOne({ _id: templateId });
   try {
-    const { template } = _doc;
-    const data = generator(JSON.parse(template));
+    const { quantity, jsonSchema } = _doc;
+
+    const data = generateItems(quantity, JSON.parse(jsonSchema));
+
     res.status(200).json(data);
   } catch (error) {
     res.sendStatus(500);

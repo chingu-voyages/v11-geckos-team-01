@@ -150,8 +150,9 @@ class App extends React.Component {
               <div className="flex-item">
                 <Editor
                   onChange={this.props.generateSchema}
+                  defaultValue={this.props.jsonRaw}
                   viewPortMargin={Infinity}
-                  newTemplateId={schemaId}
+                  newSchemaId={schemaId}
                   readOnly={false}
                 />
               </div>

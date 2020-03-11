@@ -1,5 +1,6 @@
 
 import React from 'react'
+import debounce from 'lodash.debounce'
 
 import PropTypes from 'prop-types'
 import moment from 'moment'
@@ -38,6 +39,11 @@ function Templates (props) {
     }
   }
 
+  const createOne = debounce(props.createOne, 1000, {
+    leading: true,
+    trailing: false
+  })
+
   return (
     <>
       {props.user
@@ -45,7 +51,7 @@ function Templates (props) {
           <List>
             <ListItem
               button
-              onClick={props.createOne}
+              onClick={createOne}
             >
               <ListItemIcon>
                 {CreateIcon}
