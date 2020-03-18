@@ -26,7 +26,6 @@ require('codemirror/addon/lint/json-lint');
 class Editor extends React.Component {
   constructor(props) {
     super(props);
-    this.textAreaNode = null;
     this.codeMirrorInstance = null;
     this.codeMirror = null;
     this.options = {
@@ -45,7 +44,7 @@ class Editor extends React.Component {
   getCodeMirrorInstance() {
     return require('codemirror');
   }
-  componentWillReceiveProps(props) {
+  componentDidUpdate(props) {
     const { lastTemplateId } = this.state
 
     if (props.newTemplateId !== lastTemplateId) {
@@ -64,7 +63,9 @@ class Editor extends React.Component {
     this.setState({
       defaultValue: this.props.defaultValue
     })
+
     const codeMirrorInstance = this.getCodeMirrorInstance();
+
     this.codeMirror = codeMirrorInstance.fromTextArea(
       this.textAreaNode,
       this.options
@@ -93,6 +94,7 @@ class Editor extends React.Component {
   render() {
     return (
       <textarea
+        id="editor-instance"
         ref={(ref) => (this.textAreaNode = ref)}
         autoFocus={true}
         defaultValue={this.state.defaultValue}
