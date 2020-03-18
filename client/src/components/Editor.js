@@ -37,26 +37,31 @@ class Editor extends React.Component {
       lineNumbers: true
     };
     this.state = {
-      lastTemplateId: null,
+      lastSchemaId: null,
       defaultValue: JSON.stringify(initial, null, 2)
     }
   }
   getCodeMirrorInstance() {
     return require('codemirror');
   }
-  componentDidUpdate(props) {
-    const { lastTemplateId } = this.state
+  async componentDidUpdate(prevProps) {
+    const { lastSchemaId } = this.state
 
-    if (props.newTemplateId !== lastTemplateId) {
-      this.setState({ lastTemplateId: props.newTemplateId })
-      // try {
-      //   this.codeMirror
-      //     .getDoc()
-      //     .setValue(JSON.stringify(props.defaultValue, null, 2));
-      // } catch (error) {
-      //   console.error(error)
-      //   return false;
-      // }
+    const { newSchemaId, defaultValue } = this.props
+
+    if (newSchemaId !== lastSchemaId) {
+      await this.setState({
+        lastSchemaId: newSchemaId,
+        defaultValue
+      })
+      try {
+        this.codeMirror
+          .getDoc()
+          .setValue(defaultValue);
+      } catch (error) {
+        console.error(error)
+        return false;
+      }
     }
   }
   componentDidMount() {
@@ -76,6 +81,8 @@ class Editor extends React.Component {
     const doc = this.codeMirror.getDoc();
     // const str = formatJSONfromString(doc.getValue());
     const str = doc.getValue();
+
+    console.log(str);
 
     const val = JSON.parse(str);
     this.props.onChange(val);
@@ -108,8 +115,8 @@ Editor.propTypes = {
   onChange: PropTypes.func,
   options: PropTypes.object,
   readOnly: PropTypes.bool,
-  newTemplateId: PropTypes.string,
-  defaultValue: PropTypes.object,
+  newSchemaId: PropTypes.string,
+  defaultValue: PropTypes.string,
   preserveScrollPosition: PropTypes.bool
 };
 

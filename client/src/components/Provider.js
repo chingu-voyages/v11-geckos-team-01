@@ -16,6 +16,7 @@ export default function Provider(Presenter) {
       super(props);
       this.state = {
         user: null,
+        schemaId: null,
         jsonRaw: JSON.stringify(initial, null, 2),
         jsonSchema: null,
         selectedIndex: 0,
@@ -37,9 +38,9 @@ export default function Provider(Presenter) {
       const { data } = await template.get('/')
 
       if (data && data.length) {
-        const schemaId = get(data, '[0]._id')
+        // const schemaId = get(data, '[0]._id')
 
-        await this.setState({ schemaId, jsonSchemas: data });
+        await this.setState({ jsonSchemas: data });
       }
 
       const response = await auth.get('/current_user', {
@@ -116,7 +117,7 @@ export default function Provider(Presenter) {
     }
 
     deleteOne = () => {
-      const { jsonSchemas, schemaId, } = this.state
+      const { jsonSchemas, schemaId } = this.state
 
       const url = `/${schemaId}`
 
@@ -167,7 +168,9 @@ export default function Provider(Presenter) {
       try {
         const jsonSchema = inferSchema(v)
 
-        this.setState({ jsonSchema, jsonRaw: v })
+        const jsonRaw = JSON.stringify(v, null, 2)
+
+        this.setState({ jsonSchema, jsonRaw })
       } catch (e) {
         console.log(e)
       }
@@ -182,7 +185,7 @@ export default function Provider(Presenter) {
       this.setState({ selectedIndex })
     }
 
-    render (props) {
+    render () {
       return (
         <Presenter
           setDataQuantity={this.setDataQuantity}
@@ -200,7 +203,6 @@ export default function Provider(Presenter) {
           quantity={this.state.quantity}
           user={this.state.user}
           items={this.state.items}
-          {...props}
         />
       );
     }

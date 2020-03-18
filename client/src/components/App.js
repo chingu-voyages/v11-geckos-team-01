@@ -53,7 +53,7 @@ class App extends React.Component {
       value: [],
       tab: 'jsonSchemas',
       helpers,
-      initial,
+      initial: JSON.stringify(initial, null, 2),
       open: false
     }
   }
@@ -81,8 +81,14 @@ class App extends React.Component {
     console.log(snackbar.getCloseOnEscape())
   }
 
+  componentWillReceiveProps({ schemaId }) {
+    console.log(schemaId)
+  }
+
   render() {
-    const { jsonSchemas, user, schemaId } = this.props
+    const { jsonSchemas, user } = this.props
+
+    console.log(this.props.schemaId)
 
     const { open, helpers, tab } = this.state;
 
@@ -152,7 +158,7 @@ class App extends React.Component {
                   onChange={this.props.generateSchema}
                   defaultValue={this.props.jsonRaw}
                   viewPortMargin={Infinity}
-                  newSchemaId={schemaId}
+                  newSchemaId={this.props.schemaId}
                   readOnly={false}
                 />
               </div>

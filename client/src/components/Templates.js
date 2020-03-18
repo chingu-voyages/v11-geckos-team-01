@@ -34,6 +34,7 @@ const CreateIcon = (
 
 function Templates (props) {
   const focusSchema = (schema) => {
+
     if (schema._id !== props.schemaId) {
       props.callback(schema)
     }
