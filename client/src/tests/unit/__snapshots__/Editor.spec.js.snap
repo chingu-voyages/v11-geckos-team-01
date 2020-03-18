@@ -17,3 +17,21 @@ exports[`should display an initial value upon rendering 1`] = `
   \\"timestamp\\": 0
 }"
 `;
+
+exports[`should display an intial value that matches a snapshot 1`] = `
+"{
+  \\"data\\": {
+    \\"id\\": \\"{{random.uuid}}\\",
+    \\"isDeleted\\": true,
+    \\"percentage\\": 0,
+    \\"createdOn\\": \\"2019-10-24T20:08:45.889Z\\",
+    \\"createdBy\\": \\"{{name.lastName}}\\",
+    \\"updatedOn\\": \\"2019-10-24T20:08:45.889Z\\",
+    \\"updatedBy\\": \\"{{name.lastName}}\\"
+  },
+  \\"version\\": \\"{{random.number}}\\",
+  \\"statusCode\\": \\"{{random.number}}\\",
+  \\"requestId\\": \\"{{random.uuid}}\\",
+  \\"timestamp\\": 0
+}"
+`;

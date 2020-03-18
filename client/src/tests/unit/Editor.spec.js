@@ -14,7 +14,7 @@ console.log(typeof initial);
 
 const mountFunction = (options = {}) => {
 
-  let { onChange } = options
+  let { onChange, defaultValue } = options
 
   if (!onChange) {
     onChange = () => {}
