@@ -26,7 +26,7 @@
     "faker": "^4.1.0",
     "jshint": "^2.10.2",
     "lodash.flow": "^3.5.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "nodemon": "^2.0.2"
   },
   "devDependencies": {
